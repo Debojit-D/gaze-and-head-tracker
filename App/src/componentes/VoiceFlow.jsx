@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import "./VoiceFlow.css";
 import KeyboardWithInput from "./KeyboardWithInput";
 
-const DWELL_TIME = 2000; // 2 seconds
-
 export default function VoiceFlow({ onBack }) {
   const [step, setStep] = useState("listening"); // 'listening' | 'keyboard'
 

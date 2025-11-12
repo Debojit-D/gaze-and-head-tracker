@@ -46,7 +46,7 @@ const BACKSPACE_DWELL_TIME = 2000; // 2 seconds for backspace
 // Define different keyboard layouts
 const KEYBOARD_LAYOUTS = {
   default: [
-    { id: "i", label: "I", type: "pronoun", color: "#fff4d6" },
+    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
     {
       id: "questions",
       label: "QUESTIONS",
@@ -260,7 +260,7 @@ const KEYBOARD_LAYOUTS = {
     { id: "clear", label: "clear", type: "action", color: "#f5f5f5" },
   ],
   afterILike: [
-    { id: "i", label: "I", type: "pronoun", color: "#fff4d6" },
+    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
     {
       id: "questions",
       label: "QUESTIONS",
@@ -382,7 +382,7 @@ const KEYBOARD_LAYOUTS = {
     { id: "clear", label: "clear", type: "action", color: "#f5f5f5" },
   ],
   vocab: [
-    { id: "i", label: "I", type: "pronoun", color: "#fff4d6" },
+    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
     { id: "to", label: "to", type: "preposition", color: "#f5f5f5" },
     { id: "a", label: "a", type: "article", color: "#f5f5f5" },
     {
@@ -498,7 +498,7 @@ const KEYBOARD_LAYOUTS = {
     { id: "clear", label: "clear", type: "action", color: "#f5f5f5" },
   ],
   afterILikeToPlay: [
-    { id: "i", label: "I", type: "pronoun", color: "#fff4d6" },
+    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
     { id: "to", label: "to", type: "preposition", color: "#f5f5f5" },
     { id: "a", label: "a", type: "article", color: "#f5f5f5" },
     {
@@ -626,6 +626,45 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
   const dwellTimerRef = useRef(null);
   const hoverSoundRef = useRef(null);
   const audioEnabledRef = useRef(false);
+  const speechSynthRef = useRef(null);
+
+  // Initialize speech synthesis
+  useEffect(() => {
+    if ("speechSynthesis" in window) {
+      speechSynthRef.current = window.speechSynthesis;
+      console.log("Text-to-speech initialized");
+    } else {
+      console.warn("Text-to-speech not supported in this browser");
+    }
+  }, []);
+
+  // Function to speak text
+  const speakText = (text) => {
+    if (!speechSynthRef.current) return;
+
+    // Cancel any ongoing speech
+    speechSynthRef.current.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    // Optional: Set a specific voice (e.g., female voice)
+    const voices = speechSynthRef.current.getVoices();
+    if (voices.length > 0) {
+      // Try to find a preferred voice, or use default
+      const preferredVoice = voices.find((voice) =>
+        voice.lang.startsWith("en")
+      );
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+    }
+
+    speechSynthRef.current.speak(utterance);
+    console.log("Speaking:", text);
+  };
 
   // Initialize audio
   useEffect(() => {
@@ -745,6 +784,7 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
 
   // Handle backspace
   const handleBackspace = () => {
+    speakText("backspace");
     const words = sentence.trim().split(" ");
     if (words.length > 0 && words[0] !== "") {
       words.pop();
@@ -813,21 +853,29 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
     console.log("Executing action for key:", key.label);
 
     if (key.id === "clear") {
+      speakText("clear");
       setSentence("");
       setCurrentLayout("default");
       setCurrentKeys(KEYBOARD_LAYOUTS.default);
     } else if (key.id === "home") {
+      speakText("home");
       setCurrentLayout("default");
       setCurrentKeys(KEYBOARD_LAYOUTS.default);
     } else if (key.id === "exit") {
+      speakText("exit");
       if (onClose) onClose();
     } else if (key.id === "vocab") {
+      speakText("vocab");
       setCurrentLayout("vocab");
       setCurrentKeys(KEYBOARD_LAYOUTS.vocab);
     } else if (key.type === "category" && KEYBOARD_LAYOUTS[key.id]) {
+      speakText(key.label);
       setCurrentLayout(key.id);
       setCurrentKeys(KEYBOARD_LAYOUTS[key.id]);
     } else {
+      // Speak the word before adding it to sentence
+      speakText(key.label);
+
       const newSentence = sentence ? `${sentence} ${key.label}` : key.label;
       console.log("Setting new sentence:", newSentence);
       setSentence(newSentence);
