@@ -1,191 +1,200 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import './EyeGazeFlow.css'
-import EyeIcon from '../icons/eye-care.png'
-import Keyboard from './Keyboard'
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import "./EyeGazeFlow.css";
+import EyeIcon from "../icons/eye-care.png";
+import KeyboardWithInput from "./KeyboardWithInput";
 
 // 8 calibration points (no center): corners + mids
 const CALIB_POINTS = [
-  { x: 12, y: 16 },   // top-left
-  { x: 88, y: 16 },   // top-right
-  { x: 12, y: 84 },   // bottom-left
-  { x: 88, y: 84 },   // bottom-right
-  { x: 50, y: 16 },   // top-center
-  { x: 50, y: 84 },   // bottom-center
-  { x: 12, y: 50 },   // mid-left
-  { x: 88, y: 50 },   // mid-right
-]
+  { x: 12, y: 16 }, // top-left
+  { x: 88, y: 16 }, // top-right
+  { x: 12, y: 84 }, // bottom-left
+  { x: 88, y: 84 }, // bottom-right
+  { x: 50, y: 16 }, // top-center
+  { x: 50, y: 84 }, // bottom-center
+  { x: 12, y: 50 }, // mid-left
+  { x: 88, y: 50 }, // mid-right
+];
 
 export default function EyeGazeFlow({ onBack }) {
-  const [step, setStep] = useState('intro') // 'intro' | 'calibrate' | 'success' | 'done'
-  const [index, setIndex] = useState(0)
-  const [hoveredElement, setHoveredElement] = useState(null)
-  const [sentence, setSentence] = useState('')
-  const dwellTimerRef = useRef(null)
-  const mouseRef = useRef({ x: -1000, y: -1000 })
-  const stageRef = useRef(null)
-  const rafRef = useRef(0)
+  const [step, setStep] = useState("intro"); // 'intro' | 'calibrate' | 'success' | 'done'
+  const [index, setIndex] = useState(0);
+  const [hoveredElement, setHoveredElement] = useState(null);
+  const dwellTimerRef = useRef(null);
+  const mouseRef = useRef({ x: -1000, y: -1000 });
+  const stageRef = useRef(null);
+  const rafRef = useRef(0);
 
-  const DWELL_TIME = 2000 // 2 seconds in milliseconds
+  const DWELL_TIME = 2000; // 2 seconds in milliseconds
 
   // Convert percent positions to style
   const targetStyle = useMemo(() => {
-    const p = CALIB_POINTS[index]
+    const p = CALIB_POINTS[index];
     return {
       left: `${p.x}%`,
       top: `${p.y}%`,
-    }
-  }, [index])
+    };
+  }, [index]);
 
   // Start calibration after intro
   const startCalibration = () => {
-    setStep('calibrate')
-    setIndex(0)
-  }
+    setStep("calibrate");
+    setIndex(0);
+  };
 
   // Track mouse position
   useEffect(() => {
     const setVars = (x, y) => {
-      mouseRef.current = { x, y }
-      document.body.style.setProperty('--mouse-x', `${x}px`)
-      document.body.style.setProperty('--mouse-y', `${y}px`)
-    }
+      mouseRef.current = { x, y };
+      document.body.style.setProperty("--mouse-x", `${x}px`);
+      document.body.style.setProperty("--mouse-y", `${y}px`);
+    };
 
     const onMove = (e) => {
-      setVars(e.clientX, e.clientY)
-    }
+      setVars(e.clientX, e.clientY);
+    };
     const onTouch = (e) => {
       if (e.touches && e.touches[0]) {
-        setVars(e.touches[0].clientX, e.touches[0].clientY)
+        setVars(e.touches[0].clientX, e.touches[0].clientY);
       }
-    }
+    };
 
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('touchmove', onTouch, { passive: true })
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onTouch, { passive: true });
 
     return () => {
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('touchmove', onTouch)
-    }
-  }, [])
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("touchmove", onTouch);
+    };
+  }, []);
 
   // Dwell detection for buttons and calibration targets
   useEffect(() => {
     const checkHover = () => {
-      const { x, y } = mouseRef.current
-      let found = null
+      const { x, y } = mouseRef.current;
+      let found = null;
 
       // Check buttons (start button)
-      const buttons = document.querySelectorAll('.primary')
+      const buttons = document.querySelectorAll(".primary");
       buttons.forEach((btn) => {
-        const rect = btn.getBoundingClientRect()
-        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-          found = btn.className
+        const rect = btn.getBoundingClientRect();
+        if (
+          x >= rect.left &&
+          x <= rect.right &&
+          y >= rect.top &&
+          y <= rect.bottom
+        ) {
+          found = btn.className;
         }
-      })
+      });
 
       // Check calibration target if in calibrate step
-      if (step === 'calibrate' && !found) {
-        const target = document.querySelector('.target')
+      if (step === "calibrate" && !found) {
+        const target = document.querySelector(".target");
         if (target) {
-          const rect = target.getBoundingClientRect()
-          const THRESHOLD = 80
-          const centerX = rect.left + rect.width / 2
-          const centerY = rect.top + rect.height / 2
-          const dx = x - centerX
-          const dy = y - centerY
-          const dist = Math.sqrt(dx * dx + dy * dy)
+          const rect = target.getBoundingClientRect();
+          const THRESHOLD = 80;
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const dx = x - centerX;
+          const dy = y - centerY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist <= THRESHOLD) {
-            found = 'target'
+            found = "target";
           }
         }
       }
 
       if (found !== hoveredElement) {
-        setHoveredElement(found)
+        setHoveredElement(found);
       }
 
-      rafRef.current = requestAnimationFrame(checkHover)
-    }
+      rafRef.current = requestAnimationFrame(checkHover);
+    };
 
-    rafRef.current = requestAnimationFrame(checkHover)
+    rafRef.current = requestAnimationFrame(checkHover);
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    }
-  }, [hoveredElement, step])
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [hoveredElement, step]);
 
   // Handle dwell timer and actions
   useEffect(() => {
     if (dwellTimerRef.current) {
-      clearTimeout(dwellTimerRef.current)
-      dwellTimerRef.current = null
+      clearTimeout(dwellTimerRef.current);
+      dwellTimerRef.current = null;
     }
 
     if (hoveredElement) {
       dwellTimerRef.current = setTimeout(() => {
-        if (hoveredElement === 'primary' && step === 'intro') {
-          startCalibration()
-        } else if (hoveredElement === 'target' && step === 'calibrate') {
+        if (hoveredElement === "primary" && step === "intro") {
+          startCalibration();
+        } else if (hoveredElement === "target" && step === "calibrate") {
           setIndex((i) => {
             if (i + 1 >= CALIB_POINTS.length) {
-              setStep('success')
-              return i
+              setStep("success");
+              return i;
             }
-            return i + 1
-          })
+            return i + 1;
+          });
         }
-      }, DWELL_TIME)
+      }, DWELL_TIME);
     }
 
     return () => {
       if (dwellTimerRef.current) {
-        clearTimeout(dwellTimerRef.current)
-        dwellTimerRef.current = null
+        clearTimeout(dwellTimerRef.current);
+        dwellTimerRef.current = null;
       }
-    }
-  }, [hoveredElement, step])
+    };
+  }, [hoveredElement, step]);
 
   // Update cursor fill state
   useEffect(() => {
     if (hoveredElement) {
-      document.body.style.setProperty('--dwell-duration', `${DWELL_TIME}ms`)
+      document.body.style.setProperty("--dwell-duration", `${DWELL_TIME}ms`);
       requestAnimationFrame(() => {
-        document.body.style.setProperty('--cursor-fill', 'inset(0 0 0 0 round 50%)')
-      })
+        document.body.style.setProperty(
+          "--cursor-fill",
+          "inset(0 0 0 0 round 50%)"
+        );
+      });
     } else {
-      document.body.style.setProperty('--dwell-duration', '0s')
+      document.body.style.setProperty("--dwell-duration", "0s");
       requestAnimationFrame(() => {
-        document.body.style.setProperty('--cursor-fill', 'inset(100% 0 0 0 round 50%)')
-      })
+        document.body.style.setProperty(
+          "--cursor-fill",
+          "inset(100% 0 0 0 round 50%)"
+        );
+      });
     }
-  }, [hoveredElement])
+  }, [hoveredElement]);
 
   // Auto-transition from success to done after 2 seconds
   useEffect(() => {
-    if (step === 'success') {
+    if (step === "success") {
       const timer = setTimeout(() => {
-        setStep('done')
-      }, 2000)
-      return () => clearTimeout(timer)
+        setStep("done");
+      }, 2000);
+      return () => clearTimeout(timer);
     }
-  }, [step])
+  }, [step]);
 
   // Handle 'B' key press to go back to home
   useEffect(() => {
     const handleKeyPress = (e) => {
-      if (e.key === 'b' || e.key === 'B') {
-        onBack && onBack()
+      if (e.key === "b" || e.key === "B") {
+        onBack && onBack();
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [onBack])
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [onBack]);
 
   return (
     <div className="eye-wrapper">
-
-      {step === 'intro' && (
+      {step === "intro" && (
         <div className="panel intro">
           <div className="panel-header">
             <img src={EyeIcon} alt="Eye" />
@@ -193,25 +202,22 @@ export default function EyeGazeFlow({ onBack }) {
           </div>
 
           <div className="panel-body">
-            <button className="primary">
-              Follow and hold the pointer
-            </button>
+            <button className="primary">Follow and hold the pointer</button>
           </div>
         </div>
       )}
 
-      {step === 'calibrate' && (
+      {step === "calibrate" && (
         <div className="calib-stage" aria-live="polite" ref={stageRef}>
           {/* current target only */}
-          <div
-            className="target"
-            style={targetStyle}
-          />
-          <div className="hint">Look at the dot and hold for 2s ({index + 1}/{CALIB_POINTS.length})</div>
+          <div className="target" style={targetStyle} />
+          <div className="hint">
+            Look at the dot and hold for 2s ({index + 1}/{CALIB_POINTS.length})
+          </div>
         </div>
       )}
 
-      {step === 'success' && (
+      {step === "success" && (
         <div className="success-screen">
           <div className="success-card">
             <div className="success-title">Eye-Gaze Setup Complete</div>
@@ -220,22 +226,7 @@ export default function EyeGazeFlow({ onBack }) {
         </div>
       )}
 
-      {step === 'done' && (
-        <div className="done-screen">
-          <div className="input-display">
-            <input 
-              type="text" 
-              className="sentence-input" 
-              placeholder="Your sentence will appear here..."
-              value={sentence}
-              readOnly
-            />
-            <button className="close-btn" aria-label="Close">×</button>
-          </div>
-          
-          <Keyboard sentence={sentence} onSentenceChange={setSentence} />
-        </div>
-      )}
+      {step === "done" && <KeyboardWithInput onClose={onBack} />}
     </div>
-  )
+  );
 }

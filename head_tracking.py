@@ -104,7 +104,8 @@ class HeadGazeMouseController:
         return frame
 
     def run(self):
-        cap = cv2.VideoCapture(0)
+        # cap = cv2.VideoCapture(0) was not working for mac, so changed to below line
+        cap = cv2.VideoCapture(1)
         if not cap.isOpened():
             print("Error: Could not open webcam.")
             return

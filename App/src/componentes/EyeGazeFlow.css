@@ -221,10 +221,11 @@
   padding: 0.7rem 3rem 0.7rem 1rem;
   border: 3px solid #000;
   border-radius: 12px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.95rem;
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  font-size: 2rem;
   background: #fff;
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
 
