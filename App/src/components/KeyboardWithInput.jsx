@@ -616,7 +616,11 @@ const KEYBOARD_LAYOUTS = {
   ],
 };
 
-export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
+export default function KeyboardWithInput({
+  onClose,
+  getLLMSuggestions,
+  audioEnabled,
+}) {
   const [sentence, setSentence] = useState("");
   const [hoveredElement, setHoveredElement] = useState(null);
   const [currentLayout, setCurrentLayout] = useState("default");
@@ -626,7 +630,6 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
   const rafRef = useRef(0);
   const dwellTimerRef = useRef(null);
   const hoverSoundRef = useRef(null);
-  const audioEnabledRef = useRef(false);
   const speechSynthRef = useRef(null);
 
   // Initialize speech synthesis
@@ -672,22 +675,7 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
     hoverSoundRef.current = new Audio(popSound);
     hoverSoundRef.current.volume = 0.5;
 
-    const enableAudio = () => {
-      if (!audioEnabledRef.current) {
-        hoverSoundRef.current
-          .play()
-          .then(() => {
-            hoverSoundRef.current.pause();
-            hoverSoundRef.current.currentTime = 0;
-            audioEnabledRef.current = true;
-          })
-          .catch((e) => console.error("Failed to enable audio:", e));
-      }
-    };
-
-    document.addEventListener("click", enableAudio, { once: true });
     return () => {
-      document.removeEventListener("click", enableAudio);
       if (hoverSoundRef.current) hoverSoundRef.current = null;
     };
   }, []);
@@ -726,7 +714,7 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
         });
       });
 
-      if (hoverSoundRef.current && audioEnabledRef.current) {
+      if (hoverSoundRef.current && audioEnabled) {
         hoverSoundRef.current.currentTime = 0;
         hoverSoundRef.current.play().catch(() => {});
       }

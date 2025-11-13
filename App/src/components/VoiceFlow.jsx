@@ -8,7 +8,7 @@ import PauseIcon from "../icons/pause-button.png";
 import ClearIcon from "../icons/clean.png";
 import popSound from "../sounds/ui-pop-sound-316482.mp3";
 
-export default function VoiceFlow({ onBack }) {
+export default function VoiceFlow({ onBack, audioEnabled }) {
   const [transcript, setTranscript] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -20,7 +20,6 @@ export default function VoiceFlow({ onBack }) {
   const dwellTimerRef = useRef(null);
   const speechSynthRef = useRef(null);
   const hoverSoundRef = useRef(null);
-  const audioEnabledRef = useRef(false);
   const interimTranscriptRef = useRef("");
 
   const DWELL_TIME = 2000;
@@ -37,22 +36,7 @@ export default function VoiceFlow({ onBack }) {
     hoverSoundRef.current = new Audio(popSound);
     hoverSoundRef.current.volume = 0.5;
 
-    const enableAudio = () => {
-      if (!audioEnabledRef.current) {
-        hoverSoundRef.current
-          .play()
-          .then(() => {
-            hoverSoundRef.current.pause();
-            hoverSoundRef.current.currentTime = 0;
-            audioEnabledRef.current = true;
-          })
-          .catch((e) => console.error("Failed to enable audio:", e));
-      }
-    };
-
-    document.addEventListener("click", enableAudio, { once: true });
     return () => {
-      document.removeEventListener("click", enableAudio);
       if (hoverSoundRef.current) hoverSoundRef.current = null;
     };
   }, []);
@@ -181,7 +165,7 @@ export default function VoiceFlow({ onBack }) {
       });
 
       // Play pop sound
-      if (hoverSoundRef.current && audioEnabledRef.current) {
+      if (hoverSoundRef.current && audioEnabled) {
         hoverSoundRef.current.currentTime = 0;
         hoverSoundRef.current.play().catch(() => {});
       }

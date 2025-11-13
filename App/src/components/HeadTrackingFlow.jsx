@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./HeadTrackingFlow.css";
 import KeyboardWithInput from "./KeyboardWithInput";
 
-export default function HeadTrackingFlow({ onBack }) {
+export default function HeadTrackingFlow({ onBack, audioEnabled }) {
   // Handle 'B' key press to go back to home
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -17,7 +17,7 @@ export default function HeadTrackingFlow({ onBack }) {
 
   return (
     <div className="head-wrapper">
-      <KeyboardWithInput onClose={onBack} />
+      <KeyboardWithInput onClose={onBack} audioEnabled={audioEnabled} />
     </div>
   );
 }

@@ -15,7 +15,7 @@ const CALIB_POINTS = [
   { x: 88, y: 50 }, // mid-right
 ];
 
-export default function EyeGazeFlow({ onBack }) {
+export default function EyeGazeFlow({ onBack, audioEnabled }) {
   const [step, setStep] = useState("intro"); // 'intro' | 'calibrate' | 'success' | 'done'
   const [index, setIndex] = useState(0);
   const [hoveredElement, setHoveredElement] = useState(null);
@@ -242,7 +242,9 @@ export default function EyeGazeFlow({ onBack }) {
         </div>
       )}
 
-      {step === "done" && <KeyboardWithInput onClose={onBack} />}
+      {step === "done" && (
+        <KeyboardWithInput onClose={onBack} audioEnabled={audioEnabled} />
+      )}
     </div>
   );
 }

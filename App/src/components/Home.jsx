@@ -15,36 +15,20 @@ const CARDS = [
 
 const DWELL_TIME = 2000; // 2 seconds in milliseconds
 
-export default function Home({ onSelectModality }) {
+export default function Home({ onSelectModality, audioEnabled }) {
   const containerRef = useRef(null);
   const [hoveredCard, setHoveredCard] = useState(null);
   const dwellTimerRef = useRef(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const rafRef = useRef(0);
   const hoverSoundRef = useRef(null);
-  const audioEnabledRef = useRef(false);
 
   // Initialize audio
   useEffect(() => {
     hoverSoundRef.current = new Audio(popSound);
     hoverSoundRef.current.volume = 0.5;
 
-    const enableAudio = () => {
-      if (!audioEnabledRef.current) {
-        hoverSoundRef.current
-          .play()
-          .then(() => {
-            hoverSoundRef.current.pause();
-            hoverSoundRef.current.currentTime = 0;
-            audioEnabledRef.current = true;
-          })
-          .catch((e) => console.error("Failed to enable audio:", e));
-      }
-    };
-
-    document.addEventListener("click", enableAudio, { once: true });
     return () => {
-      document.removeEventListener("click", enableAudio);
       if (hoverSoundRef.current) hoverSoundRef.current = null;
     };
   }, []);
@@ -132,7 +116,7 @@ export default function Home({ onSelectModality }) {
       });
 
       // Play pop sound
-      if (hoverSoundRef.current && audioEnabledRef.current) {
+      if (hoverSoundRef.current && audioEnabled) {
         hoverSoundRef.current.currentTime = 0;
         hoverSoundRef.current.play().catch(() => {});
       }
