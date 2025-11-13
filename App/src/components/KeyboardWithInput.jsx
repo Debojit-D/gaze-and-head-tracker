@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./KeyboardWithInput.css";
 import "./Keyboard.css";
 import BackspaceIcon from "../icons/backspace-32.svg";
+import SpeakerIcon from "../icons/speaker.png";
 import popSound from "../sounds/ui-pop-sound-316482.mp3";
 
 // Import all keyboard icons
@@ -772,6 +773,21 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
         }
       }
 
+      if (!found) {
+        const speakerBtn = document.querySelector(".speaker-btn");
+        if (speakerBtn) {
+          const rect = speakerBtn.getBoundingClientRect();
+          if (
+            x >= rect.left &&
+            x <= rect.right &&
+            y >= rect.top &&
+            y <= rect.bottom
+          ) {
+            found = "speaker-btn";
+          }
+        }
+      }
+
       if (found !== hoveredElement) setHoveredElement(found);
       rafRef.current = requestAnimationFrame(checkHover);
     };
@@ -791,6 +807,13 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
       setSentence(words.join(" "));
     } else {
       setSentence("");
+    }
+  };
+
+  // Handle speaker - speak the entire sentence
+  const handleSpeaker = () => {
+    if (sentence.trim()) {
+      speakText(sentence);
     }
   };
 
@@ -897,13 +920,18 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
     console.log("Starting dwell timer for:", hoveredElement);
 
     const dwellTime =
-      hoveredElement === "backspace-btn" ? BACKSPACE_DWELL_TIME : DWELL_TIME;
+      hoveredElement === "backspace-btn" || hoveredElement === "speaker-btn"
+        ? BACKSPACE_DWELL_TIME
+        : DWELL_TIME;
 
     dwellTimerRef.current = setTimeout(() => {
       console.log("Dwell completed for:", hoveredElement);
 
       if (hoveredElement === "backspace-btn") {
         handleBackspace();
+        setHoveredElement(null);
+      } else if (hoveredElement === "speaker-btn") {
+        handleSpeaker();
         setHoveredElement(null);
       } else {
         executeKeyAction(hoveredElement);
@@ -928,6 +956,9 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
           value={sentence}
           readOnly
         />
+        <button className="speaker-btn" aria-label="Speak sentence">
+          <img src={SpeakerIcon} alt="Speaker" />
+        </button>
         <button className="backspace-btn" aria-label="Backspace">
           <img src={BackspaceIcon} alt="Backspace" />
         </button>

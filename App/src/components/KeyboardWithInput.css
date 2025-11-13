@@ -18,7 +18,7 @@
 
 .sentence-input {
   width: 100%;
-  padding: 0.7rem 3rem 0.7rem 1rem;
+  padding: 0.7rem 9rem 0.7rem 1rem;
   border: 3px solid #000;
   border-radius: 12px;
   font-family: "Courier New", monospace;
@@ -35,9 +35,9 @@
 }
 
 .close-btn,
-.backspace-btn {
+.backspace-btn,
+.speaker-btn {
   position: absolute;
-  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   width: 70px;
@@ -52,7 +52,16 @@
   transition: transform 0.2s ease;
 }
 
-.backspace-btn img {
+.backspace-btn {
+  right: 8px;
+}
+
+.speaker-btn {
+  right: 85px;
+}
+
+.backspace-btn img,
+.speaker-btn img {
   width: 56px;
   height: 56px;
   object-fit: contain;
@@ -61,11 +70,13 @@
 }
 
 .close-btn:hover,
-.backspace-btn:hover {
+.backspace-btn:hover,
+.speaker-btn:hover {
   transform: translateY(-50%) scale(1.05);
 }
 
-.backspace-btn:hover img {
+.backspace-btn:hover img,
+.speaker-btn:hover img {
   transform: translateY(-6px) scale(1.15);
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
 }
