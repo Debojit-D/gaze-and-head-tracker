@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import Home from '../src/componentes/Home'
-import EyeGazeFlow from '../src/componentes/EyeGazeFlow'
-import VoiceFlow from '../src/componentes/VoiceFlow'
-import HeadTrackingFlow from '../src/componentes/HeadTrackingFlow'
+import Home from '../src/components/Home'
+import EyeGazeFlow from '../src/components/EyeGazeFlow'
+import VoiceFlow from '../src/components/VoiceFlow'
+import HeadTrackingFlow from '../src/components/HeadTrackingFlow'
 import '../src/index.css'
 
 import './App.css'
