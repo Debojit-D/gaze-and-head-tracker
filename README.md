@@ -1,6 +1,10 @@
 # Multimodal Input App
 
-![](./assets/interface.png)
+![](./assets/keyboard.png)
+
+![](./assets/voice1.png)
+
+![](./assets/voice2.png)
 
 ```
 npm install
