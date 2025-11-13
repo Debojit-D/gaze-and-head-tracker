@@ -7,6 +7,7 @@ import popSound from "../sounds/ui-pop-sound-316482.mp3";
 
 // Import all keyboard icons
 import MySelfIcon from "../icons/myself_10012465.png";
+import ExitIcon from "../icons/exit.png";
 import QuestionIcon from "../icons/question-mark.png";
 import PlaceIcon from "../icons/place.png";
 import PhoneIcon from "../icons/phone-call.png";
@@ -79,7 +80,7 @@ const KEYBOARD_LAYOUTS = {
     {
       id: "exit",
       label: "EXIT",
-      icon: HomeIcon,
+      icon: ExitIcon,
       type: "action",
       color: "#ffccbc",
     },
