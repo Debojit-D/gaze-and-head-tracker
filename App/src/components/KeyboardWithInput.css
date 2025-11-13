@@ -16,8 +16,8 @@
   flex-shrink: 0;
 }
 
-.sentence-input {
-  width: 100%;
+.keyboard-sentence-input {
+  width: 104.5%;
   padding: 0.7rem 9rem 0.7rem 1rem;
   border: 3px solid #000;
   border-radius: 12px;
@@ -29,7 +29,7 @@
   box-sizing: border-box;
 }
 
-.sentence-input:focus {
+.keyboard-sentence-input:focus {
   outline: none;
   border-color: #4a90e2;
 }

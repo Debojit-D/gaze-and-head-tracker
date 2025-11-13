@@ -951,7 +951,7 @@ export default function KeyboardWithInput({ onClose, getLLMSuggestions }) {
       <div className="input-display">
         <input
           type="text"
-          className="sentence-input"
+          className="keyboard-sentence-input"
           placeholder="Your sentence will appear here..."
           value={sentence}
           readOnly
