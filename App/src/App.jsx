@@ -41,7 +41,7 @@ function App() {
     setRoute(id);
   };
 
-  if (route === "eye") {
+  if (route === "llm") {
     return (
       <EyeGazeFlow
         onBack={() => setRoute("home")}

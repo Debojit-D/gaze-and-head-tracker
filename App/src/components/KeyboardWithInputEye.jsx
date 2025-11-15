@@ -4,9 +4,11 @@ import "./Keyboard.css";
 import BackspaceIcon from "../icons/backspace-32.svg";
 import SpeakerIcon from "../icons/speaker.png";
 import popSound from "../sounds/ui-pop-sound-316482.mp3";
+import llmTextGenerator from "../services/llmTextGenerator";
 
 // Import all keyboard icons
 import SettingsIcon from "../icons/settings.png";
+import AIIcon from "../icons/ai-assistant.png";
 import ClearIcon from "../icons/clean.png";
 import MySelfIcon from "../icons/myself_10012465.png";
 import ExitIcon from "../icons/exit.png";
@@ -656,20 +658,24 @@ export default function KeyboardWithInputEye({
   const [currentKeys, setCurrentKeys] = useState(KEYBOARD_LAYOUTS.default);
   const [showTimePopup, setShowTimePopup] = useState(false);
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
+  const [showLLMLoading, setShowLLMLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState({
     time: "",
     day: "",
     date: "",
   });
   const [dwellTime, setDwellTime] = useState(2500); // milliseconds (2.5 seconds default)
+  const [llmReady, setLlmReady] = useState(false);
+  const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
 
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const rafRef = useRef(0);
   const dwellTimerRef = useRef(null);
   const hoverSoundRef = useRef(null);
   const speechSynthRef = useRef(null);
+  const llmInitializedRef = useRef(false);
 
-  // Initialize speech synthesis
+  // Initialize speech synthesis and LLM
   useEffect(() => {
     if ("speechSynthesis" in window) {
       speechSynthRef.current = window.speechSynthesis;
@@ -677,6 +683,34 @@ export default function KeyboardWithInputEye({
     } else {
       console.warn("Text-to-speech not supported in this browser");
     }
+
+    // Initialize LLM pipeline
+    if (!llmInitializedRef.current) {
+      llmInitializedRef.current = true;
+      console.log("Starting LLM initialization...");
+      setShowLLMLoading(true);
+      llmTextGenerator
+        .initialize()
+        .then(() => {
+          setLlmReady(true);
+          setShowLLMLoading(false);
+          console.log("LLM is ready for predictions");
+        })
+        .catch((error) => {
+          console.error("Failed to initialize LLM:", error);
+          setLlmReady(false);
+          setShowLLMLoading(false);
+        });
+    }
+
+    return () => {
+      // Cleanup on unmount
+      if (llmTextGenerator.isReady) {
+        llmTextGenerator
+          .dispose()
+          .catch((err) => console.error("Error disposing LLM:", err));
+      }
+    };
   }, []);
 
   // Function to speak text
@@ -772,7 +806,7 @@ export default function KeyboardWithInputEye({
   useEffect(() => {
     const checkHover = () => {
       // Skip hover detection if any popup is showing
-      if (showTimePopup || showSettingsPopup) {
+      if (showTimePopup || showSettingsPopup || showLLMLoading) {
         rafRef.current = requestAnimationFrame(checkHover);
         return;
       }
@@ -831,7 +865,7 @@ export default function KeyboardWithInputEye({
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [hoveredElement, showTimePopup, showSettingsPopup]);
+  }, [hoveredElement, showTimePopup, showSettingsPopup, showLLMLoading]);
 
   // Handle backspace
   const handleBackspace = () => {
@@ -867,32 +901,109 @@ export default function KeyboardWithInputEye({
     return "default";
   };
 
+  // Reserved keys that should always be present
+  const RESERVED_KEYS = ["time", "exit", "settings", "home", "clear"];
+
+  // Get important keys from default layout
+  const getReservedKeys = () => {
+    return KEYBOARD_LAYOUTS.default.filter((key) =>
+      RESERVED_KEYS.includes(key.id)
+    );
+  };
+
   // Update keyboard with LLM or pattern-based
   const updateKeyboardWithLLM = async (updatedSentence) => {
-    if (getLLMSuggestions && updatedSentence.trim()) {
+    // Always use LLM when ready, otherwise fallback to pattern-based
+    if (llmReady && !isGeneratingSuggestions) {
       try {
-        const suggestions = await getLLMSuggestions(updatedSentence);
-        if (suggestions && suggestions.length > 0) {
-          const llmLayout = [...KEYBOARD_LAYOUTS.default];
-          suggestions.slice(0, 18).forEach((suggestion, index) => {
-            if (index < 18 && llmLayout[index + 6]) {
-              llmLayout[index + 6] = {
-                id: `llm_${index}`,
-                label: suggestion,
-                type: "suggestion",
-                color: "#e3f2fd",
-              };
-            }
-          });
-          setCurrentKeys(llmLayout);
-          setCurrentLayout("llm");
-          return;
+        setIsGeneratingSuggestions(true);
+        console.log("Generating LLM suggestions for:", updatedSentence);
+
+        const suggestions = await llmTextGenerator.getMultipleSuggestions(
+          updatedSentence,
+          15
+        );
+        console.log("Got LLM suggestions:", suggestions);
+
+        // Build keyboard layout: 24 keys total (4 rows × 6 columns)
+        const llmLayout = [];
+        const reservedKeys = getReservedKeys();
+
+        // Get first row from default layout (positions 0-5)
+        const firstRow = KEYBOARD_LAYOUTS.default.slice(0, 6);
+
+        // Determine which layout to sample vocab from
+        const words = updatedSentence.trim().toLowerCase().split(" ");
+        const lastWord = words[words.length - 1];
+        const vocabSource = lastWord === "i" ? "afterI" : "default";
+
+        // Get all available vocab from appropriate layout (excluding reserved keys and first row)
+        const availableVocab = KEYBOARD_LAYOUTS[vocabSource].filter(
+          (key) =>
+            !RESERVED_KEYS.includes(key.id) &&
+            !firstRow.some((fk) => fk.id === key.id)
+        );
+
+        // Shuffle vocab for variety
+        const shuffledVocab = [...availableVocab].sort(
+          () => Math.random() - 0.5
+        );
+
+        let vocabIndex = 0;
+        let suggestionIndex = 0;
+
+        // Fill all 24 positions
+        for (let i = 0; i < 24; i++) {
+          // First row (positions 0-5): keep same as default
+          if (i < 6) {
+            llmLayout.push(firstRow[i]);
+          }
+          // Position 17 (row 3, col 6): SETTINGS
+          else if (i === 17) {
+            llmLayout.push(reservedKeys.find((k) => k.id === "settings"));
+          }
+          // Position 23 (row 4, col 6): CLEAR
+          else if (i === 23) {
+            llmLayout.push(reservedKeys.find((k) => k.id === "clear"));
+          }
+          // Fill with LLM suggestions (blue keys)
+          else if (suggestionIndex < suggestions.length) {
+            llmLayout.push({
+              id: `llm_${suggestionIndex}`,
+              label: suggestions[suggestionIndex],
+              type: "suggestion",
+              color: "#e3f2fd",
+            });
+            suggestionIndex++;
+          }
+          // Fill remaining with vocab words
+          else if (vocabIndex < shuffledVocab.length) {
+            llmLayout.push(shuffledVocab[vocabIndex]);
+            vocabIndex++;
+          }
+          // Fallback to empty (should rarely happen)
+          else {
+            llmLayout.push({
+              id: `empty_${i}`,
+              label: "",
+              type: "empty",
+              color: "#f5f5f5",
+            });
+          }
         }
+
+        setCurrentKeys(llmLayout);
+        setCurrentLayout("llm");
+        setIsGeneratingSuggestions(false);
+        return;
       } catch (error) {
         console.error("Error getting LLM suggestions:", error);
+      } finally {
+        setIsGeneratingSuggestions(false);
       }
     }
 
+    // Fallback to pattern-based layout
     const nextLayout = getNextLayout(updatedSentence);
     setCurrentLayout(nextLayout);
     setCurrentKeys(KEYBOARD_LAYOUTS[nextLayout]);
@@ -1061,6 +1172,27 @@ export default function KeyboardWithInputEye({
         </div>
       )}
 
+      {/* LLM Loading Popup */}
+      {showLLMLoading && (
+        <div className="llm-loading-overlay">
+          <div className="llm-loading-popup">
+            <div className="llm-loading-icon">
+              <img
+                src={AIIcon}
+                alt="AI"
+                style={{ width: "80px", height: "80px" }}
+              />
+            </div>
+            <h2 className="llm-loading-title">Loading Model</h2>
+            <div className="llm-loading-spinner"></div>
+            <p className="llm-loading-text">
+              Initializing Xenova/distilgpt2...
+            </p>
+            <p className="llm-loading-subtext">Wait for around 30 seconds</p>
+          </div>
+        </div>
+      )}
+
       {/* Settings Popup Overlay */}
       {showSettingsPopup && (
         <div
@@ -1136,9 +1268,10 @@ export default function KeyboardWithInputEye({
               data-key-id={key.id}
               className={`keyboard-key ${key.type} ${
                 hoveredElement === key.id ? "hovered" : ""
-              }`}
+              } ${key.type === "empty" ? "disabled" : ""}`}
               style={{ backgroundColor: key.color }}
               aria-label={key.label}
+              disabled={key.type === "empty"}
             >
               {key.icon && (
                 <img src={key.icon} alt={key.label} className="key-icon" />

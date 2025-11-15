@@ -7,9 +7,10 @@ import EyeIcon from "../icons/eye-care.png";
 import MicIcon from "../icons/voice.png";
 import HeadIcon from "../icons/face-id.png";
 import ButtonIcon from "../icons/button.png";
+import AiIcon from "../icons/ai.png";
 
 const CARDS = [
-  { id: "eye", title: "Eye-Gaze", icon: EyeIcon },
+  { id: "llm", title: "LLM-Powered", icon: AiIcon },
   { id: "voice", title: "Voice Recognition", icon: MicIcon },
   { id: "head", title: "Head Tracking", icon: HeadIcon },
   { id: "switch", title: "Switch Control", icon: ButtonIcon },
