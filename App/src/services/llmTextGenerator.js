@@ -18,6 +18,7 @@ class LLMTextGenerator {
     this.initPromise = null;
     this.isReady = false;
     // Using distilgpt2 for faster performance (smaller model, quicker loading)
+    // this.modelId = "Xenova/gpt2";
     this.modelId = "Xenova/distilgpt2";
   }
 

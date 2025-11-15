@@ -4,7 +4,8 @@ import popSound from "../sounds/ui-pop-sound-316482.mp3";
 
 // Import icons
 import EyeIcon from "../icons/eye-care.png";
-import MicIcon from "../icons/voice.png";
+// import MicIcon from "../icons/voice.png";
+import MicIcon from "../icons/voice-recognition.png";
 import HeadIcon from "../icons/face-id.png";
 import ButtonIcon from "../icons/button.png";
 import AiIcon from "../icons/ai.png";
