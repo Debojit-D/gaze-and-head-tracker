@@ -8,8 +8,8 @@ import PauseIcon from "../icons/pause-button.png";
 import ClearIcon from "../icons/clean.png";
 import popSound from "../sounds/ui-pop-sound-316482.mp3";
 import speechToTextService from "../services/speechToTextService";
+import textToSpeechService from "../services/textToSpeechService";
 import voiceIcon from "../icons/voice-person.png";
-import AIIcon from "../icons/AI.png";
 
 export default function VoiceFlow({ onBack, audioEnabled }) {
   const [transcript, setTranscript] = useState("");
@@ -17,6 +17,7 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
   const [isPaused, setIsPaused] = useState(false);
   const [isModelLoading, setIsModelLoading] = useState(true);
   const [showModelLoading, setShowModelLoading] = useState(true);
+  const [isTTSLoading, setIsTTSLoading] = useState(true);
   const [hoveredElement, setHoveredElement] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -40,25 +41,34 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
     }
   }, []);
 
-  // Initialize speech-to-text model
+  // Initialize speech-to-text and text-to-speech models
   useEffect(() => {
-    const initModel = async () => {
+    const initModels = async () => {
       try {
         setIsModelLoading(true);
         setShowModelLoading(true);
+        setIsTTSLoading(true);
+
         console.log("Initializing speech-to-text model...");
         await speechToTextService.initialize();
-        setIsModelLoading(false);
-        setShowModelLoading(false);
         console.log("Speech-to-text model ready");
-      } catch (error) {
-        console.error("Failed to initialize speech-to-text:", error);
+
+        console.log("Initializing text-to-speech model...");
+        await textToSpeechService.initialize();
+        console.log("Text-to-speech model ready");
+
         setIsModelLoading(false);
         setShowModelLoading(false);
+        setIsTTSLoading(false);
+      } catch (error) {
+        console.error("Failed to initialize models:", error);
+        setIsModelLoading(false);
+        setShowModelLoading(false);
+        setIsTTSLoading(false);
       }
     };
 
-    initModel();
+    initModels();
 
     return () => {
       // Cleanup
@@ -331,14 +341,28 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
   };
 
   // Handle speaker
-  const handleSpeaker = () => {
-    if (transcript.trim() && speechSynthRef.current) {
-      speechSynthRef.current.cancel();
-      const utterance = new SpeechSynthesisUtterance(transcript);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
-      speechSynthRef.current.speak(utterance);
+  const handleSpeaker = async () => {
+    if (!transcript.trim()) return;
+
+    if (isTTSLoading) {
+      console.log("Text-to-speech model is still loading...");
+      return;
+    }
+
+    try {
+      console.log("Speaking text:", transcript);
+      await textToSpeechService.speak(transcript);
+    } catch (error) {
+      console.error("Error speaking text:", error);
+      // Fallback to browser's speech synthesis
+      if (speechSynthRef.current) {
+        speechSynthRef.current.cancel();
+        const utterance = new SpeechSynthesisUtterance(transcript);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        speechSynthRef.current.speak(utterance);
+      }
     }
   };
 
@@ -393,7 +417,7 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
     onBack && onBack();
   };
 
-  // Dwell timer for buttons (excluding play/pause which use click)
+  // Dwell timer for buttons
   useEffect(() => {
     if (dwellTimerRef.current) {
       clearTimeout(dwellTimerRef.current);
@@ -402,16 +426,15 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
 
     if (!hoveredElement) return;
 
-    // Skip dwell timer for play/pause buttons - they use click instead
-    if (hoveredElement === "play-btn" || hoveredElement === "pause-btn") {
-      return;
-    }
-
     dwellTimerRef.current = setTimeout(() => {
       if (hoveredElement === "backspace-btn") {
         handleBackspace();
       } else if (hoveredElement === "speaker-btn") {
         handleSpeaker();
+      } else if (hoveredElement === "play-btn") {
+        handlePlay();
+      } else if (hoveredElement === "pause-btn") {
+        handlePause();
       } else if (hoveredElement === "clear-btn") {
         handleClear();
       } else if (hoveredElement === "exit-btn") {
@@ -458,12 +481,14 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
                 style={{ width: "80px", height: "80px" }}
               />
             </div>
-            <h2 className="llm-loading-title">Loading Speech Model</h2>
+            <h2 className="llm-loading-title">Loading Speech Models</h2>
             <div className="llm-loading-spinner"></div>
             <p className="llm-loading-text">
-              Initializing Speech-to-Text (Xenova/whisper-tiny.en)...
+              Initializing
+              <br />Speech-to-Text (Xenova/whisper-tiny.en) &
+              <br />Text-to-Speech (Xenova/speecht5_tts) ...
             </p>
-            <p className="llm-loading-subtext">Wait for around 30 seconds.</p>
+            <p className="llm-loading-subtext">Wait for around 60 seconds.</p>
           </div>
         </div>
       )}
@@ -516,7 +541,6 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
             <button
               className="pause-btn control-btn"
               aria-label="Pause listening"
-              onClick={handlePause}
             >
               <img src={PauseIcon} alt="Pause" />
               <span>Pause Listening</span>
@@ -525,7 +549,6 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
             <button
               className="play-btn control-btn"
               aria-label="Start listening"
-              onClick={handlePlay}
             >
               <img src={PlayIcon} alt="Play" />
               <span>Resume Listening</span>
