@@ -122,8 +122,8 @@ body {
 
 .backspace-btn:hover img,
 .speaker-btn:hover img {
-  transform: translateY(-6px) scale(1.15);
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
+  transform: scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 /* Time Popup Styles */
@@ -205,7 +205,187 @@ body {
   font-weight: 700;
   color: #fff;
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 10px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.08em;
+}
+
+/* Switch Status Popup Styles */
+.switch-status-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  pointer-events: none;
+}
+
+.switch-status-popup {
+  background: linear-gradient(135deg, #673ab7 0%, #512da8 100%);
+  border: 4px solid #000;
+  border-radius: 20px;
+  padding: 2rem 3rem;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3), 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  text-align: center;
+  min-width: 300px;
+}
+
+.switch-status-popup.switch-on {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+}
+
+.switch-status-popup.switch-off {
+  background: linear-gradient(135deg, #ff5252 0%, #e53935 100%);
+}
+
+.switch-status-label {
+  font-family: "Courier New", monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.switch-status-value {
+  font-family: "Courier New", monospace;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3), 0 3px 15px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.1em;
+}
+
+/* Instructions Popup Styles */
+.instructions-popup {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 4px solid #000;
+  border-radius: 24px;
+  padding: 2.5rem 3rem;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3), 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  text-align: center;
+  min-width: 500px;
+  max-width: 600px;
+  position: relative;
+  z-index: 100000;
+}
+
+.instructions-popup-header h2 {
+  font-family: "Courier New", monospace;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3), 0 3px 15px rgba(0, 0, 0, 0.4);
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.05em;
+}
+
+.instructions-popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.instruction-key {
+  font-family: "Courier New", monospace;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #000;
+  background: #ffd54f;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+  min-width: 80px;
+  text-align: center;
+}
+
+.instruction-icon {
+  font-size: 2rem;
+  min-width: 80px;
+  text-align: center;
+}
+
+.instruction-text {
+  font-family: "Courier New", monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  text-align: left;
+  flex: 1;
+}
+
+.instruction-note {
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffd54f;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  margin-top: 0.5rem;
+  padding: 0.8rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 2px solid rgba(255, 213, 79, 0.4);
+}
+
+.instruction-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.instruction-footer-main {
+  font-family: "Courier New", monospace;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.instruction-footer-sub {
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e3f2fd;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.instruction-key-inline {
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+  background: #38c319;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  text-shadow: none;
 }
 
 /* Settings Popup Styles */
@@ -533,4 +713,49 @@ body {
 
 .settings-popup::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.6);
+}
+
+/* Switch Access Navigation Styles */
+.switch-highlighted {
+  outline: 5px solid #ff0000 !important;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 5px #ff0000, 0 0 20px rgba(255, 0, 0, 0.6),
+    0 12px 20px rgba(0, 0, 0, 0.25) !important;
+  animation: highlight-pulse 1s ease-in-out infinite;
+  z-index: 10;
+  position: relative;
+  transform: translateY(-8px) scale(1.05) !important;
+}
+
+/* Row highlighting for switch navigation */
+.switch-highlighted-row {
+  outline: 4px solid #ff0000 !important;
+  outline-offset: 2px;
+  animation: row-pulse 1s ease-in-out infinite;
+  z-index: 5;
+  position: relative;
+}
+
+@keyframes highlight-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 5px #ff0000, 0 0 20px rgba(255, 0, 0, 0.6),
+      0 12px 20px rgba(0, 0, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 5px #ff0000, 0 0 30px rgba(255, 0, 0, 0.9),
+      0 12px 20px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@keyframes row-pulse {
+  0%,
+  100% {
+    outline-color: #ff0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+  }
+  50% {
+    outline-color: #ff6666;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.7);
+  }
 }

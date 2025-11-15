@@ -669,7 +669,7 @@ export default function KeyboardWithInput({
     horizontalSensitivity: 25,
     verticalSensitivity: 50,
     acceleration: 50,
-    dwellTime: 3500, // milliseconds (3.5 seconds default)
+    dwellTime: 3000, // milliseconds (3.0 seconds default)
   });
 
   const mouseRef = useRef({ x: -1000, y: -1000 });
