@@ -1,37 +1,58 @@
 # Multimodal Input App
 
-![](./assets/keyboard.png)
+An accessible input web application featuring multiple modalities - Head-Gaze, Voice Recognition, Switch Control along with LLM-powered keyboard prediction for text entry and interaction. Utilizes Text Generation, Speech-to-Text, and Text-to-Speech services for web applications from [huggingface/transformers.js](https://github.com/huggingface/transformers.js). And utilizes [Tracky-Mouse API](https://github.com/1j01/tracky-mouse) for head tracking based cursor control.
 
-![](./assets/voice1.png)
+![](./assets/1-open.png)
+![](./assets/3-llm.png)
 
-![](./assets/voice2.png)
+## Setup
 
-```
+```bash
+cd App
 npm install
 npm run dev
 ```
 
-# gaze-and-head-tracker
+## Features
 
-Minimal starter scripts for head-controlled and eye-gaze-controlled mouse input using MediaPipe.
+### 1. LLM-Based Text Prediction Keyboard
 
-## Requirements
+![](./assets/2-llm.png)
+_LLM-powered predictions using Xenova/distilgpt2 from [huggingface/transformers.js](https://github.com/huggingface/transformers.js)_
 
-- Python 3.8+
-- Webcam
-- Recommended OS: Linux / Windows (X11 on Linux works best for `pyautogui`)
+![](./assets/4-llm.png)
+![](./assets/5-llm.png)
+_Blue keys represent the LLM's next word predictions_
 
-### 1. Install dependencies
+### 2. Speech Recognition
 
-```bash
-pip install opencv-python mediapipe pyautogui
-```
+![](./assets/6-speech.png)
+_Speech-to-text using "Xenova/whisper-tiny.en" and text-to-speech using Web Speech API_
+![](./assets/7-speech.png)
+![](./assets/8-speech.png)
 
-## Usage
+### 3. Head Tracking
 
-```bash
-python head_tracking.py    # Head-controlled cursor
-python gaze_tracking.py    # Eye-gaze-controlled cursor
-```
+![](./assets/9-head.png)
 
-Press `ESC` or `Q` to quit.
+![](./assets/11-head.png)
+
+![](./assets/12-head.png)
+_Head movement-based cursor control using [Tracky-Mouse API](https://github.com/1j01/tracky-mouse)_
+
+![](./assets/10-head.png)
+
+### 4. Switch Control
+
+Single-switch scanning interface for accessibility. Auto-scanning through keyboard rows with individual key highlighting.
+![](./assets/13-switch.png)
+
+![](./assets/14-switch.png)
+
+![](./assets/15-switch.png)
+
+![](./assets/16-switch.png)
+
+![](./assets/17-switch.png)
+
+![](./assets/18-switch.png)
