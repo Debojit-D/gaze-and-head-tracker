@@ -17,7 +17,6 @@ import HomeIcon from "../icons/home.png";
 import EatIcon from "../icons/binge-eating.png";
 import LikeIcon from "../icons/like.png";
 import RainbowIcon from "../icons/rainbow_10129397.png";
-import SadIcon from "../icons/sad.png";
 import DrinkIcon from "../icons/cocktail.png";
 import PlayIcon from "../icons/rc-car.png";
 import StopIcon from "../icons/stop_5181609.png";

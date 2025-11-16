@@ -677,7 +677,7 @@ export default function KeyboardWithInputSwitch({
   const [switchMode, setSwitchMode] = useState(false); // Mouse active by default
   const [switchActivated, setSwitchActivated] = useState(false);
   const [currentHighlight, setCurrentHighlight] = useState(null);
-  const [highlightMode, setHighlightMode] = useState("controls"); // 'controls', 'rows', 'keys'
+  const [highlightMode, setHighlightMode] = useState("controls"); // 'controls', 'rows', 'keys', 'modality'
   const [selectedRow, setSelectedRow] = useState(null); // Track selected row for key navigation
   const switchTimerRef = useRef(null);
   const [switchDelay, setSwitchDelay] = useState(1500); // 1.5 seconds default, configurable
@@ -1094,7 +1094,13 @@ export default function KeyboardWithInputSwitch({
         hoverSoundRef.current.play().catch(() => {});
       }
 
-      if (highlightMode === "controls") {
+      if (highlightMode === "modality") {
+        // Cycle through modality buttons: llm -> voice -> head -> dismiss
+        const modalityOptions = ["llm", "voice", "head", "dismiss"];
+        const currentIndex = modalityOptions.indexOf(currentHighlight);
+        const nextIndex = (currentIndex + 1) % modalityOptions.length;
+        setCurrentHighlight(modalityOptions[nextIndex]);
+      } else if (highlightMode === "controls") {
         // Cycle through: speaker -> backspace -> rows
         if (currentHighlight === null) {
           setCurrentHighlight("speaker");
@@ -1157,24 +1163,58 @@ export default function KeyboardWithInputSwitch({
             hoverSoundRef.current.play().catch(() => {});
           }
           setSwitchActivated(true);
-          setCurrentHighlight("speaker"); // Start with speaker
+          // If modality popup is open, start with modality mode
+          if (showModalityPopup) {
+            setHighlightMode("modality");
+            setCurrentHighlight("llm");
+          } else {
+            setCurrentHighlight("speaker"); // Start with speaker
+          }
           return;
         }
 
-        // If navigation is paused (currentHighlight is null), restart from speaker
+        // If navigation is paused (currentHighlight is null), restart from appropriate mode
         if (currentHighlight === null) {
           // Play sound when restarting
           if (hoverSoundRef.current && audioEnabled) {
             hoverSoundRef.current.currentTime = 0;
             hoverSoundRef.current.play().catch(() => {});
           }
-          setHighlightMode("controls");
-          setCurrentHighlight("speaker");
+          if (showModalityPopup) {
+            setHighlightMode("modality");
+            setCurrentHighlight("llm");
+          } else {
+            setHighlightMode("controls");
+            setCurrentHighlight("speaker");
+          }
           setSelectedRow(null);
           return;
         }
 
-        if (highlightMode === "controls") {
+        if (highlightMode === "modality") {
+          // Handle modality button selection
+          if (currentHighlight === "dismiss") {
+            setShowModalityPopup(false);
+            // Reset to controls mode
+            setCurrentHighlight(null);
+            setHighlightMode("controls");
+          } else if (currentHighlight === "llm") {
+            speakText("Switching to LLM-Powered keyboard");
+            setTimeout(() => {
+              onClose && onClose("llm");
+            }, 500);
+          } else if (currentHighlight === "voice") {
+            speakText("Switching to Voice Recognition");
+            setTimeout(() => {
+              onClose && onClose("voice");
+            }, 500);
+          } else if (currentHighlight === "head") {
+            speakText("Switching to Head Tracking");
+            setTimeout(() => {
+              onClose && onClose("head");
+            }, 500);
+          }
+        } else if (highlightMode === "controls") {
           if (currentHighlight === "speaker") {
             handleSpeaker();
             // Reset and wait for next spacebar press
@@ -1223,6 +1263,7 @@ export default function KeyboardWithInputSwitch({
     sentence,
     audioEnabled,
     selectedRow,
+    showModalityPopup,
   ]);
 
   // Toggle switch mode with 's' key
@@ -1536,7 +1577,11 @@ export default function KeyboardWithInputSwitch({
               }}
             >
               <button
-                className="modality-option-btn"
+                className={`modality-option-btn ${
+                  highlightMode === "modality" && currentHighlight === "llm"
+                    ? "switch-highlighted"
+                    : ""
+                }`}
                 data-modality-btn="llm"
                 style={{
                   transform:
@@ -1552,7 +1597,11 @@ export default function KeyboardWithInputSwitch({
               </button>
 
               <button
-                className="modality-option-btn"
+                className={`modality-option-btn ${
+                  highlightMode === "modality" && currentHighlight === "voice"
+                    ? "switch-highlighted"
+                    : ""
+                }`}
                 data-modality-btn="voice"
                 style={{
                   transform:
@@ -1570,7 +1619,11 @@ export default function KeyboardWithInputSwitch({
               </button>
 
               <button
-                className="modality-option-btn"
+                className={`modality-option-btn ${
+                  highlightMode === "modality" && currentHighlight === "head"
+                    ? "switch-highlighted"
+                    : ""
+                }`}
                 data-modality-btn="head"
                 style={{
                   transform:
@@ -1586,7 +1639,12 @@ export default function KeyboardWithInputSwitch({
               </button>
 
               <button
-                className="modality-option-btn"
+                className={`modality-option-btn ${
+                  highlightMode === "modality" &&
+                  currentHighlight === "dismiss"
+                    ? "switch-highlighted"
+                    : ""
+                }`}
                 data-modality-btn="dismiss"
                 style={{
                   transform:
