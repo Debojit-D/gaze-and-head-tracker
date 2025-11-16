@@ -41,11 +41,9 @@ import LoveIcon from "../icons/love.png";
 import ToCallIcon from "../icons/phone-call.png";
 import ListenIcon from "../icons/listen.png";
 import ChangeIcon from "../icons/change.png";
-import EyeIcon from "../icons/eye-care.png";
 import MicIcon from "../icons/voice-recognition.png";
 import HeadIcon from "../icons/face-id.png";
 import ButtonIcon from "../icons/button.png";
-import AiIcon from "../icons/ai.png";
 
 const BACKSPACE_DWELL_TIME = 2000; // 2 seconds for backspace
 
@@ -875,7 +873,7 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
   };
 
   // Reserved keys that should always be present
-  const RESERVED_KEYS = ["time", "exit", "settings", "home", "clear"];
+  const RESERVED_KEYS = ["time", "exit", "settings", "home", "clear", "switchmodality"];
 
   // Get important keys from default layout
   const getReservedKeys = () => {
@@ -933,6 +931,10 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
           // First row (positions 0-5): keep same as default
           if (i < 6) {
             llmLayout.push(firstRow[i]);
+          }
+          // Position 11 (row 2, col 6): SWITCH
+          else if (i === 11) {
+            llmLayout.push(reservedKeys.find((k) => k.id === "switchmodality"));
           }
           // Position 17 (row 3, col 6): SETTINGS
           else if (i === 17) {
