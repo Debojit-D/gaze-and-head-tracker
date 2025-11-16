@@ -1181,9 +1181,13 @@ export default function KeyboardWithInput({
   const handleSettingsPopup = () => {
     if (showSettingsPopup) {
       setShowSettingsPopup(false);
+      // Clear any hovered element to prevent instant triggering
+      setHoveredElement(null);
       console.log("Settings popup closed");
     } else {
       setShowSettingsPopup(true);
+      // Clear any hovered element when opening settings
+      setHoveredElement(null);
       console.log("Settings popup opened");
 
       // Sync current slider values from TrackyMouse
@@ -1196,6 +1200,7 @@ export default function KeyboardWithInput({
 
         if (xSlider && ySlider && accelSlider) {
           setTrackySettings({
+            ...trackySettings,
             horizontalSensitivity: parseFloat(xSlider.value),
             verticalSensitivity: parseFloat(ySlider.value),
             acceleration: parseFloat(accelSlider.value),
@@ -1212,7 +1217,9 @@ export default function KeyboardWithInput({
 
   // Handle sensitivity changes
   const handleSensitivityChange = (type, value) => {
-    const newSettings = { ...trackySettings, [type]: parseFloat(value) };
+    const parsedValue =
+      type === "dwellTime" ? parseInt(value, 10) : parseFloat(value);
+    const newSettings = { ...trackySettings, [type]: parsedValue };
     setTrackySettings(newSettings);
 
     // Update TrackyMouse UI sliders directly and trigger their onchange handlers
@@ -1344,6 +1351,11 @@ export default function KeyboardWithInput({
       dwellTimerRef.current = null;
     }
 
+    // Don't start dwell timer if settings popup or other popups are open
+    if (showTimePopup || showSettingsPopup || showSetupCompletePopup) {
+      return;
+    }
+
     if (!hoveredElement) return;
 
     console.log("Starting dwell timer for:", hoveredElement);
@@ -1389,7 +1401,15 @@ export default function KeyboardWithInput({
         dwellTimerRef.current = null;
       }
     };
-  }, [hoveredElement, sentence, currentKeys]);
+  }, [
+    hoveredElement,
+    sentence,
+    currentKeys,
+    trackySettings.dwellTime,
+    showTimePopup,
+    showSettingsPopup,
+    showSetupCompletePopup,
+  ]);
 
   return (
     <div className="keyboard-with-input-screen keyboard-with-input-head-screen">
@@ -1534,7 +1554,10 @@ export default function KeyboardWithInput({
                 <label className="setting-label">
                   <span className="setting-name">Dwell Time</span>
                   <span className="setting-value">
-                    {(trackySettings.dwellTime / 1000).toFixed(1)}s
+                    {trackySettings.dwellTime
+                      ? (trackySettings.dwellTime / 1000).toFixed(1)
+                      : "3.0"}
+                    s
                   </span>
                 </label>
                 <div className="slider-container">
@@ -1544,7 +1567,7 @@ export default function KeyboardWithInput({
                     min="2000"
                     max="8000"
                     step="500"
-                    value={trackySettings.dwellTime}
+                    value={trackySettings.dwellTime || 3000}
                     onChange={(e) =>
                       handleSensitivityChange("dwellTime", e.target.value)
                     }

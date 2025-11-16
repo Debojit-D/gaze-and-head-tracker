@@ -970,9 +970,13 @@ export default function KeyboardWithInputSwitch({
   const handleSettingsPopup = () => {
     if (showSettingsPopup) {
       setShowSettingsPopup(false);
+      // Clear any hovered element to prevent instant triggering
+      setHoveredElement(null);
       console.log("Settings popup closed");
     } else {
       setShowSettingsPopup(true);
+      // Clear any hovered element when opening settings
+      setHoveredElement(null);
       console.log("Settings popup opened");
 
       // Optionally speak
@@ -1310,6 +1314,11 @@ export default function KeyboardWithInputSwitch({
       dwellTimerRef.current = null;
     }
 
+    // Don't start dwell timer if settings popup or other popups are open
+    if (showTimePopup || showSettingsPopup || showInstructionsPopup) {
+      return;
+    }
+
     if (!hoveredElement) return;
 
     console.log("Starting dwell timer for:", hoveredElement);
@@ -1355,7 +1364,15 @@ export default function KeyboardWithInputSwitch({
         dwellTimerRef.current = null;
       }
     };
-  }, [hoveredElement, sentence, currentKeys]);
+  }, [
+    hoveredElement,
+    sentence,
+    currentKeys,
+    dwellTime,
+    showTimePopup,
+    showSettingsPopup,
+    showInstructionsPopup,
+  ]);
 
   // Helper to check if element is highlighted
   const isHighlighted = (type, index = null) => {
@@ -1525,7 +1542,7 @@ export default function KeyboardWithInputSwitch({
                 <label className="setting-label">
                   <span className="setting-name">Dwell Time</span>
                   <span className="setting-value">
-                    {(dwellTime / 1000).toFixed(1)}s
+                    {dwellTime ? (dwellTime / 1000).toFixed(1) : "2.5"}s
                   </span>
                 </label>
                 <div className="slider-container">
@@ -1535,8 +1552,8 @@ export default function KeyboardWithInputSwitch({
                     min="2000"
                     max="8000"
                     step="500"
-                    value={dwellTime}
-                    onChange={(e) => setDwellTime(parseFloat(e.target.value))}
+                    value={dwellTime || 2500}
+                    onChange={(e) => setDwellTime(parseInt(e.target.value, 10))}
                     className="setting-slider"
                   />
                   <span className="slider-max">8s</span>
@@ -1640,8 +1657,7 @@ export default function KeyboardWithInputSwitch({
 
               <button
                 className={`modality-option-btn ${
-                  highlightMode === "modality" &&
-                  currentHighlight === "dismiss"
+                  highlightMode === "modality" && currentHighlight === "dismiss"
                     ? "switch-highlighted"
                     : ""
                 }`}

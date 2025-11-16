@@ -989,9 +989,13 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
   const handleSettingsPopup = () => {
     if (showSettingsPopup) {
       setShowSettingsPopup(false);
+      // Clear any hovered element to prevent instant triggering
+      setHoveredElement(null);
       console.log("Settings popup closed");
     } else {
       setShowSettingsPopup(true);
+      // Clear any hovered element when opening settings
+      setHoveredElement(null);
       console.log("Settings popup opened");
 
       // Optionally speak
@@ -1107,6 +1111,11 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
       dwellTimerRef.current = null;
     }
 
+    // Don't start dwell timer if settings popup or other popups are open
+    if (showTimePopup || showSettingsPopup || showLLMLoading) {
+      return;
+    }
+
     if (!hoveredElement) return;
 
     console.log("Starting dwell timer for:", hoveredElement);
@@ -1152,7 +1161,15 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
         dwellTimerRef.current = null;
       }
     };
-  }, [hoveredElement, sentence, currentKeys]);
+  }, [
+    hoveredElement,
+    sentence,
+    currentKeys,
+    dwellTime,
+    showTimePopup,
+    showSettingsPopup,
+    showLLMLoading,
+  ]);
 
   return (
     <div className="keyboard-with-input-screen keyboard-with-input-switch-screen">
@@ -1216,7 +1233,7 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
                 <label className="setting-label">
                   <span className="setting-name">Dwell Time</span>
                   <span className="setting-value">
-                    {(dwellTime / 1000).toFixed(1)}s
+                    {dwellTime ? (dwellTime / 1000).toFixed(1) : "2.5"}s
                   </span>
                 </label>
                 <div className="slider-container">
@@ -1226,8 +1243,8 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
                     min="2000"
                     max="8000"
                     step="500"
-                    value={dwellTime}
-                    onChange={(e) => setDwellTime(parseFloat(e.target.value))}
+                    value={dwellTime || 2500}
+                    onChange={(e) => setDwellTime(parseInt(e.target.value, 10))}
                     className="setting-slider"
                   />
                   <span className="slider-max">8s</span>
