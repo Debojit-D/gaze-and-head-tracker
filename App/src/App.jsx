@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Home from "../src/components/Home";
-import EyeGazeFlow from "../src/components/EyeGazeFlow";
+import LLM from "../src/components/LLM";
 import VoiceFlow from "../src/components/VoiceFlow";
 import HeadTrackingFlow from "../src/components/HeadTrackingFlow";
 import SwitchControl from "../src/components/SwitchControl";
@@ -43,7 +43,7 @@ function App() {
 
   if (route === "llm") {
     return (
-      <EyeGazeFlow
+      <LLM
         onBack={() => setRoute("home")}
         audioEnabled={audioEnabled}
       />

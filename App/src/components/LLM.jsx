@@ -268,9 +268,9 @@
 
 import React, { useEffect } from "react";
 import "./HeadTrackingFlow.css";
-import KeyboardWithInputEye from "./KeyboardWithInputEye";
+import KeyboardWithInputLLM from "./KeyboardWithInputLLM";
 
-export default function EyeGazeFlow({ onBack, audioEnabled }) {
+export default function LLM({ onBack, audioEnabled }) {
   // Handle 'B' key press to go back to home
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -285,7 +285,7 @@ export default function EyeGazeFlow({ onBack, audioEnabled }) {
 
   return (
     <div className="head-wrapper">
-      <KeyboardWithInputEye onClose={onBack} audioEnabled={audioEnabled} />
+      <KeyboardWithInputLLM onClose={onBack} audioEnabled={audioEnabled} />
     </div>
   );
 }

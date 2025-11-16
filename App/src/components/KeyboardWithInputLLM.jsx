@@ -44,6 +44,300 @@ import ListenIcon from "../icons/listen.png";
 
 const BACKSPACE_DWELL_TIME = 2000; // 2 seconds for backspace
 
+const ALL_KEYBOARD_KEYS = {
+  default: [
+    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
+    {
+      id: "bicycle",
+      label: "bicycle",
+      icon: BicycleIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "videogame",
+      label: "video game",
+      icon: GameIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "sports",
+      label: "sports",
+      icon: SportsIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "time",
+      label: "TIME",
+      icon: ClockIcon,
+      type: "category",
+      color: "#ffd699",
+    },
+    {
+      id: "exit",
+      label: "EXIT",
+      icon: ExitIcon,
+      type: "action",
+      color: "#ffccbc",
+    },
+    {
+      id: "my",
+      label: "my",
+      icon: MySelfIcon,
+      type: "pronoun",
+      color: "#fff4d6",
+    },
+    { id: "can", label: "can", type: "verb", color: "#f5f5f5" },
+    { id: "to", label: "to", type: "preposition", color: "#f5f5f5" },
+    { id: "eat", label: "eat", icon: EatIcon, type: "verb", color: "#c8e6c9" },
+    {
+      id: "good",
+      label: "good",
+      icon: LikeIcon,
+      type: "adjective",
+      color: "#e1bee7",
+    },
+    {
+      id: "sad",
+      label: "sad",
+      icon: SadIcon,
+      type: "adjective",
+      color: "#e1bee7",
+    },
+    { id: "you", label: "you", type: "pronoun", color: "#fff4d6" },
+    { id: "do", label: "do", type: "verb", color: "#f5f5f5" },
+    {
+      id: "drink",
+      label: "drink",
+      icon: DrinkIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "play",
+      label: "play",
+      icon: PlayIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "stop",
+      label: "stop",
+      icon: StopIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "settings",
+      label: "SETTINGS",
+      icon: SettingsIcon,
+      type: "category",
+      color: "#f3f0e3",
+    },
+    { id: "it", label: "it", type: "pronoun", color: "#fff4d6" },
+    {
+      id: "dont",
+      label: "don't",
+      icon: CancelIcon,
+      type: "verb",
+      color: "#ffcdd2",
+    },
+    {
+      id: "like",
+      label: "like",
+      icon: SmileIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "yes",
+      label: "yes",
+      icon: CheckIcon,
+      type: "response",
+      color: "#c8e6c9",
+    },
+    {
+      id: "watch",
+      label: "watch",
+      icon: VideoIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "clear",
+      label: "clear",
+      icon: ClearIcon,
+      type: "action",
+      color: "#f5f5f5",
+    },
+    { id: "would", label: "would", type: "verb", color: "#f5f5f5" },
+    { id: "am", label: "am", type: "verb", color: "#f5f5f5" },
+    { id: "have", label: "have", type: "verb", color: "#f5f5f5" },
+    { id: "got", label: "got", type: "verb", color: "#f5f5f5" },
+    { id: "buy", label: "buy", icon: BuyIcon, type: "verb", color: "#c8e6c9" },
+    {
+      id: "home",
+      label: "HOME",
+      icon: HomeIcon,
+      type: "action",
+      color: "#ffccbc",
+    },
+    { id: "could", label: "could", type: "verb", color: "#f5f5f5" },
+    { id: "m", label: "'m", type: "verb", color: "#f5f5f5" },
+    {
+      id: "hurt",
+      label: "hurt",
+      icon: HurtIcon,
+      type: "verb",
+      color: "#ffcdd2",
+    },
+    {
+      id: "need",
+      label: "need",
+      icon: NeedIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    { id: "will", label: "will", type: "verb", color: "#f5f5f5" },
+    { id: "was", label: "was", type: "verb", color: "#f5f5f5" },
+    {
+      id: "love",
+      label: "love",
+      icon: LoveIcon,
+      type: "verb",
+      color: "#ffb3ba",
+    },
+    { id: "todo", label: "to do", type: "verb", color: "#f5f5f5" },
+    { id: "tohave", label: "to have", type: "verb", color: "#f5f5f5" },
+    {
+      id: "toeat",
+      label: "to eat",
+      icon: EatIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "tocall",
+      label: "to call",
+      icon: ToCallIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    { id: "ed", label: "-ed", type: "suffix", color: "#f5f5f5" },
+    {
+      id: "todrink",
+      label: "to drink",
+      icon: DrinkIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "toplay",
+      label: "to play",
+      icon: PlayIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "tostop",
+      label: "to stop",
+      icon: StopIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    { id: "s", label: "-s", type: "suffix", color: "#f5f5f5" },
+    {
+      id: "tolike",
+      label: "to like",
+      icon: SmileIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "tolisten",
+      label: "to listen",
+      icon: ListenIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    {
+      id: "towatch",
+      label: "to watch",
+      icon: VideoIcon,
+      type: "verb",
+      color: "#c8e6c9",
+    },
+    { id: "a", label: "a", type: "article", color: "#f5f5f5" },
+    { id: "and", label: "and", type: "conjunction", color: "#f5f5f5" },
+    {
+      id: "puzzle",
+      label: "puzzle",
+      icon: PuzzleIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "boardgame",
+      label: "board game",
+      icon: BoardGameIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "colors",
+      label: "colors",
+      icon: RainbowIcon,
+      type: "category",
+      color: "#e1bee7",
+    },
+    {
+      id: "me",
+      label: "me",
+      icon: MySelfIcon,
+      type: "pronoun",
+      color: "#fff4d6",
+    },
+    { id: "ing", label: "-ing", type: "suffix", color: "#f5f5f5" },
+    {
+      id: "crayons",
+      label: "crayons",
+      icon: CrayonsIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "legos",
+      label: "legos",
+      icon: LegosIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "ball",
+      label: "ball",
+      icon: BallIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "cars",
+      label: "cars",
+      icon: CarsIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+    {
+      id: "swing",
+      label: "swing",
+      icon: SwingIcon,
+      type: "noun",
+      color: "#c8e6c9",
+    },
+  ],
+};
+
 // Define different keyboard layouts
 const KEYBOARD_LAYOUTS = {
   default: [
@@ -273,385 +567,9 @@ const KEYBOARD_LAYOUTS = {
       color: "#f5f5f5",
     },
   ],
-  afterILike: [
-    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
-    {
-      id: "bicycle",
-      label: "bicycle",
-      icon: BicycleIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "videogame",
-      label: "video game",
-      icon: GameIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "sports",
-      label: "sports",
-      icon: SportsIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "time",
-      label: "TIME",
-      icon: ClockIcon,
-      type: "category",
-      color: "#ffd699",
-    },
-    {
-      id: "home",
-      label: "HOME",
-      icon: HomeIcon,
-      type: "action",
-      color: "#ffccbc",
-    },
-    {
-      id: "my",
-      label: "my",
-      icon: MySelfIcon,
-      type: "pronoun",
-      color: "#fff4d6",
-    },
-    { id: "todo", label: "to do", type: "verb", color: "#f5f5f5" },
-    { id: "tohave", label: "to have", type: "verb", color: "#f5f5f5" },
-    {
-      id: "toeat",
-      label: "to eat",
-      icon: EatIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "tocall",
-      label: "to call",
-      icon: ToCallIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "sad",
-      label: "sad",
-      icon: SadIcon,
-      type: "adjective",
-      color: "#e1bee7",
-    },
-    { id: "you", label: "you", type: "pronoun", color: "#fff4d6" },
-    { id: "ed", label: "-ed", type: "suffix", color: "#f5f5f5" },
-    {
-      id: "todrink",
-      label: "to drink",
-      icon: DrinkIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "toplay",
-      label: "to play",
-      icon: PlayIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "tostop",
-      label: "to stop",
-      icon: StopIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "settings",
-      label: "SETTINGS",
-      icon: SettingsIcon,
-      type: "category",
-      color: "#f3f0e3",
-    },
-    { id: "it", label: "it", type: "pronoun", color: "#fff4d6" },
-    { id: "s", label: "-s", type: "suffix", color: "#f5f5f5" },
-    {
-      id: "tolike",
-      label: "to like",
-      icon: SmileIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "tolisten",
-      label: "to listen",
-      icon: ListenIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "towatch",
-      label: "to watch",
-      icon: VideoIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "clear",
-      label: "clear",
-      icon: ClearIcon,
-      type: "action",
-      color: "#f5f5f5",
-    },
-  ],
-  vocab: [
-    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
-    { id: "to", label: "to", type: "preposition", color: "#f5f5f5" },
-    { id: "a", label: "a", type: "article", color: "#f5f5f5" },
-    {
-      id: "bicycle",
-      label: "bicycle",
-      icon: BicycleIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "videogame",
-      label: "video game",
-      icon: GameIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "home",
-      label: "HOME",
-      icon: HomeIcon,
-      type: "action",
-      color: "#ffccbc",
-    },
-    {
-      id: "my",
-      label: "my",
-      icon: MySelfIcon,
-      type: "pronoun",
-      color: "#fff4d6",
-    },
-    { id: "ed", label: "-ed", type: "suffix", color: "#f5f5f5" },
-    { id: "and", label: "and", type: "conjunction", color: "#f5f5f5" },
-    {
-      id: "puzzle",
-      label: "puzzle",
-      icon: PuzzleIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "boardgame",
-      label: "board game",
-      icon: BoardGameIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "colors",
-      label: "colors",
-      icon: RainbowIcon,
-      type: "category",
-      color: "#e1bee7",
-    },
-    {
-      id: "me",
-      label: "me",
-      icon: MySelfIcon,
-      type: "pronoun",
-      color: "#fff4d6",
-    },
-    { id: "ing", label: "-ing", type: "suffix", color: "#f5f5f5" },
-    {
-      id: "crayons",
-      label: "crayons",
-      icon: CrayonsIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "legos",
-      label: "legos",
-      icon: LegosIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "sports",
-      label: "sports",
-      icon: SportsIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "ball",
-      label: "ball",
-      icon: BallIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    { id: "you", label: "you", type: "pronoun", color: "#fff4d6" },
-    { id: "s", label: "-s", type: "suffix", color: "#f5f5f5" },
-    {
-      id: "cars",
-      label: "cars",
-      icon: CarsIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "swing",
-      label: "swing",
-      icon: SwingIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "watch",
-      label: "watch",
-      icon: VideoIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "clear",
-      label: "clear",
-      icon: ClearIcon,
-      type: "action",
-      color: "#f5f5f5",
-    },
-  ],
-  afterILikeToPlay: [
-    { id: "i", label: "i", type: "pronoun", color: "#fff4d6" },
-    { id: "to", label: "to", type: "preposition", color: "#f5f5f5" },
-    { id: "a", label: "a", type: "article", color: "#f5f5f5" },
-    {
-      id: "bicycle",
-      label: "bicycle",
-      icon: BicycleIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "videogame",
-      label: "video game",
-      icon: GameIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "home",
-      label: "HOME",
-      icon: HomeIcon,
-      type: "action",
-      color: "#ffccbc",
-    },
-    {
-      id: "my",
-      label: "my",
-      icon: MySelfIcon,
-      type: "pronoun",
-      color: "#fff4d6",
-    },
-    { id: "ed", label: "-ed", type: "suffix", color: "#f5f5f5" },
-    { id: "and", label: "and", type: "conjunction", color: "#f5f5f5" },
-    {
-      id: "puzzle",
-      label: "puzzle",
-      icon: PuzzleIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "boardgame",
-      label: "board game",
-      icon: BoardGameIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "colors",
-      label: "colors",
-      icon: RainbowIcon,
-      type: "category",
-      color: "#e1bee7",
-    },
-    {
-      id: "me",
-      label: "me",
-      icon: MySelfIcon,
-      type: "pronoun",
-      color: "#fff4d6",
-    },
-    { id: "ing", label: "-ing", type: "suffix", color: "#f5f5f5" },
-    {
-      id: "crayons",
-      label: "crayons",
-      icon: CrayonsIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "legos",
-      label: "legos",
-      icon: LegosIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "sports",
-      label: "sports",
-      icon: SportsIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "ball",
-      label: "ball",
-      icon: BallIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    { id: "you", label: "you", type: "pronoun", color: "#fff4d6" },
-    { id: "s", label: "-s", type: "suffix", color: "#f5f5f5" },
-    {
-      id: "cars",
-      label: "cars",
-      icon: CarsIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "swing",
-      label: "swing",
-      icon: SwingIcon,
-      type: "noun",
-      color: "#c8e6c9",
-    },
-    {
-      id: "watch",
-      label: "watch",
-      icon: VideoIcon,
-      type: "verb",
-      color: "#c8e6c9",
-    },
-    {
-      id: "clear",
-      label: "clear",
-      icon: ClearIcon,
-      type: "action",
-      color: "#f5f5f5",
-    },
-  ],
 };
 
-export default function KeyboardWithInputEye({
-  onClose,
-  getLLMSuggestions,
-  audioEnabled,
-}) {
+export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
   const [sentence, setSentence] = useState("");
   const [hoveredElement, setHoveredElement] = useState(null);
   const [currentLayout, setCurrentLayout] = useState("default");
@@ -674,6 +592,14 @@ export default function KeyboardWithInputEye({
   const hoverSoundRef = useRef(null);
   const speechSynthRef = useRef(null);
   const llmInitializedRef = useRef(false);
+  const inputRef = useRef(null);
+
+  // Auto-scroll input to show the rightmost content when sentence changes
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+    }
+  }, [sentence]);
 
   // Initialize speech synthesis and LLM
   useEffect(() => {
@@ -935,10 +861,13 @@ export default function KeyboardWithInputEye({
         // Determine which layout to sample vocab from
         const words = updatedSentence.trim().toLowerCase().split(" ");
         const lastWord = words[words.length - 1];
-        const vocabSource = lastWord === "i" ? "afterI" : "default";
+        const vocabSource =
+          lastWord === "i" ? "afterI" : ALL_KEYBOARD_KEYS.default;
 
         // Get all available vocab from appropriate layout (excluding reserved keys and first row)
-        const availableVocab = KEYBOARD_LAYOUTS[vocabSource].filter(
+        const availableVocab = (
+          lastWord === "i" ? KEYBOARD_LAYOUTS.afterI : vocabSource
+        ).filter(
           (key) =>
             !RESERVED_KEYS.includes(key.id) &&
             !firstRow.some((fk) => fk.id === key.id)
@@ -1245,6 +1174,7 @@ export default function KeyboardWithInputEye({
 
       <div className="input-display">
         <input
+          ref={inputRef}
           type="text"
           className="keyboard-sentence-input"
           placeholder="Your sentence will appear here..."

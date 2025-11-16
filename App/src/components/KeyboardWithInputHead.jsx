@@ -679,6 +679,14 @@ export default function KeyboardWithInput({
   const speechSynthRef = useRef(null);
   const trackyMouseRef = useRef(null);
   const dwellClickerRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Auto-scroll input to show the rightmost content when sentence changes
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+    }
+  }, [sentence]);
 
   // Initialize speech synthesis
   useEffect(() => {
@@ -1505,6 +1513,7 @@ export default function KeyboardWithInput({
 
       <div className="input-display">
         <input
+          ref={inputRef}
           type="text"
           className="keyboard-sentence-input"
           placeholder="Your sentence will appear here..."

@@ -29,8 +29,16 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
   const streamRef = useRef(null);
   const chunkIntervalRef = useRef(null);
   const isProcessingRef = useRef(false);
+  const inputRef = useRef(null);
 
   const DWELL_TIME = 2000;
+
+  // Auto-scroll input to show the rightmost content when transcript changes
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+    }
+  }, [transcript]);
 
   // Initialize speech synthesis
   useEffect(() => {
@@ -470,6 +478,7 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
       <div className="voice-screen">
         <div className="input-display">
           <input
+            ref={inputRef}
             type="text"
             className="voice-sentence-input"
             placeholder="Your sentence will appear here..."
