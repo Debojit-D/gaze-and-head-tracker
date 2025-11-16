@@ -283,9 +283,21 @@ export default function LLM({ onBack, audioEnabled }) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [onBack]);
 
+  const handleModalityChange = (modality) => {
+    if (modality === "home" || !modality) {
+      onBack();
+    } else {
+      // Navigate to different modality
+      onBack(modality);
+    }
+  };
+
   return (
     <div className="head-wrapper">
-      <KeyboardWithInputLLM onClose={onBack} audioEnabled={audioEnabled} />
+      <KeyboardWithInputLLM
+        onClose={handleModalityChange}
+        audioEnabled={audioEnabled}
+      />
     </div>
   );
 }

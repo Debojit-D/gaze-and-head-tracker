@@ -15,9 +15,21 @@ export default function HeadTrackingFlow({ onBack, audioEnabled }) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [onBack]);
 
+  const handleModalityChange = (modality) => {
+    if (modality === "home" || !modality) {
+      onBack();
+    } else {
+      // Navigate to different modality
+      onBack(modality);
+    }
+  };
+
   return (
     <div className="head-wrapper">
-      <KeyboardWithInput onClose={onBack} audioEnabled={audioEnabled} />
+      <KeyboardWithInput
+        onClose={handleModalityChange}
+        audioEnabled={audioEnabled}
+      />
     </div>
   );
 }

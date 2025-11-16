@@ -10,7 +10,7 @@ import llmTextGenerator from "../services/llmTextGenerator";
 import SettingsIcon from "../icons/settings.png";
 import AIIcon from "../icons/ai-assistant.png";
 import ClearIcon from "../icons/clean.png";
-import MySelfIcon from "../icons/myself_10012465.png";
+import MySelfIcon from "../icons/my.png";
 import ExitIcon from "../icons/exit.png";
 import ClockIcon from "../icons/clock.png";
 import HomeIcon from "../icons/home.png";
@@ -41,6 +41,12 @@ import BuyIcon from "../icons/cash.png";
 import LoveIcon from "../icons/love.png";
 import ToCallIcon from "../icons/phone-call.png";
 import ListenIcon from "../icons/listen.png";
+import ChangeIcon from "../icons/change.png";
+import EyeIcon from "../icons/eye-care.png";
+import MicIcon from "../icons/voice-recognition.png";
+import HeadIcon from "../icons/face-id.png";
+import ButtonIcon from "../icons/button.png";
+import AiIcon from "../icons/ai.png";
 
 const BACKSPACE_DWELL_TIME = 2000; // 2 seconds for backspace
 
@@ -100,11 +106,11 @@ const ALL_KEYBOARD_KEYS = {
       color: "#e1bee7",
     },
     {
-      id: "sad",
-      label: "sad",
-      icon: SadIcon,
-      type: "adjective",
-      color: "#e1bee7",
+      id: "switchmodality",
+      label: "SWITCH",
+      icon: ChangeIcon,
+      type: "action",
+      color: "#b3e5fc",
     },
     { id: "you", label: "you", type: "pronoun", color: "#fff4d6" },
     { id: "do", label: "do", type: "verb", color: "#f5f5f5" },
@@ -396,11 +402,11 @@ const KEYBOARD_LAYOUTS = {
       color: "#e1bee7",
     },
     {
-      id: "sad",
-      label: "sad",
-      icon: SadIcon,
-      type: "adjective",
-      color: "#e1bee7",
+      id: "switchmodality",
+      label: "SWITCH",
+      icon: ChangeIcon,
+      type: "action",
+      color: "#b3e5fc",
     },
     { id: "you", label: "you", type: "pronoun", color: "#fff4d6" },
     { id: "do", label: "do", type: "verb", color: "#f5f5f5" },
@@ -494,11 +500,11 @@ const KEYBOARD_LAYOUTS = {
       color: "#ffcdd2",
     },
     {
-      id: "need",
-      label: "need",
-      icon: NeedIcon,
-      type: "verb",
-      color: "#c8e6c9",
+      id: "switchmodality",
+      label: "SWITCH",
+      icon: ChangeIcon,
+      type: "action",
+      color: "#b3e5fc",
     },
     { id: "will", label: "will", type: "verb", color: "#f5f5f5" },
     { id: "do", label: "do", type: "verb", color: "#f5f5f5" },
@@ -577,6 +583,7 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
   const [showTimePopup, setShowTimePopup] = useState(false);
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
   const [showLLMLoading, setShowLLMLoading] = useState(false);
+  const [showModalityPopup, setShowModalityPopup] = useState(false);
   const [currentTime, setCurrentTime] = useState({
     time: "",
     day: "",
@@ -637,6 +644,21 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
           .catch((err) => console.error("Error disposing LLM:", err));
       }
     };
+  }, []);
+
+  // Handle 'C' key press to open modality popup
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === "c" || e.key === "C") {
+        setShowModalityPopup(true);
+      }
+      if (e.key === "v" || e.key === "V") {
+        setShowModalityPopup(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);
 
   // Function to speak text
@@ -731,7 +753,7 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
   // Hover detection loop
   useEffect(() => {
     const checkHover = () => {
-      // Skip hover detection if any popup is showing
+      // Skip hover detection if certain popups are showing (but not modality popup)
       if (showTimePopup || showSettingsPopup || showLLMLoading) {
         rafRef.current = requestAnimationFrame(checkHover);
         return;
@@ -739,6 +761,26 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
 
       const { x, y } = mouseRef.current;
       let found = null;
+
+      // Check modality buttons if popup is showing
+      if (showModalityPopup) {
+        const modalityBtns = document.querySelectorAll("[data-modality-btn]");
+        modalityBtns.forEach((btn) => {
+          const rect = btn.getBoundingClientRect();
+          if (
+            x >= rect.left &&
+            x <= rect.right &&
+            y >= rect.top &&
+            y <= rect.bottom
+          ) {
+            found = "modality-" + btn.getAttribute("data-modality-btn");
+          }
+        });
+
+        if (found !== hoveredElement) setHoveredElement(found);
+        rafRef.current = requestAnimationFrame(checkHover);
+        return;
+      }
 
       const keys = document.querySelectorAll(".keyboard-key");
       keys.forEach((keyEl) => {
@@ -791,7 +833,13 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [hoveredElement, showTimePopup, showSettingsPopup, showLLMLoading]);
+  }, [
+    hoveredElement,
+    showTimePopup,
+    showSettingsPopup,
+    showLLMLoading,
+    showModalityPopup,
+  ]);
 
   // Handle backspace
   const handleBackspace = () => {
@@ -1033,6 +1081,9 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
       if (onClose) onClose();
     } else if (key.id === "settings") {
       handleSettingsPopup();
+    } else if (key.id === "switchmodality") {
+      setShowModalityPopup(true);
+      speakText("Switch Modality");
     } else if (key.type === "category" && KEYBOARD_LAYOUTS[key.id]) {
       speakText(key.label);
       setCurrentLayout(key.id);
@@ -1074,6 +1125,22 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
         setHoveredElement(null);
       } else if (hoveredElement === "speaker-btn") {
         handleSpeaker();
+        setHoveredElement(null);
+      } else if (hoveredElement && hoveredElement.startsWith("modality-")) {
+        const modality = hoveredElement.replace("modality-", "");
+        if (modality === "dismiss") {
+          speakText("Dismissed");
+          setShowModalityPopup(false);
+        } else if (modality === "voice") {
+          speakText("Switching to Voice Recognition");
+          setTimeout(() => onClose("voice"), 500);
+        } else if (modality === "head") {
+          speakText("Switching to Head Tracking");
+          setTimeout(() => onClose("head"), 500);
+        } else if (modality === "switch") {
+          speakText("Switching to Switch Control");
+          setTimeout(() => onClose("switch"), 500);
+        }
         setHoveredElement(null);
       } else {
         executeKeyAction(hoveredElement);
@@ -1167,6 +1234,102 @@ export default function KeyboardWithInputLLM({ onClose, audioEnabled }) {
                   <span className="slider-max">8s</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modality Switch Popup */}
+      {showModalityPopup && (
+        <div
+          className="settings-popup-overlay"
+          style={{ cursor: "none" }}
+          onClick={(e) => {
+            if (e.target.className === "settings-popup-overlay") {
+              setShowModalityPopup(false);
+            }
+          }}
+        >
+          <div className="settings-popup" style={{ cursor: "none" }}>
+            <div className="settings-popup-header">
+              <h2>Switch Input Modality</h2>
+            </div>
+
+            <div
+              className="settings-content"
+              style={{
+                gap: "1.5rem",
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
+                cursor: "none",
+              }}
+            >
+              <button
+                className="modality-option-btn"
+                data-modality-btn="voice"
+                style={{
+                  transform:
+                    hoveredElement === "modality-voice"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">
+                  Voice Recognition
+                </div>
+                <div className="modality-option-btn-icon">
+                  <img src={MicIcon} alt="Voice" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="head"
+                style={{
+                  transform:
+                    hoveredElement === "modality-head"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Head Tracking</div>
+                <div className="modality-option-btn-icon">
+                  <img src={HeadIcon} alt="Head" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="switch"
+                style={{
+                  transform:
+                    hoveredElement === "modality-switch"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Switch Control</div>
+                <div className="modality-option-btn-icon">
+                  <img src={ButtonIcon} alt="Switch" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="dismiss"
+                style={{
+                  transform:
+                    hoveredElement === "modality-dismiss"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Dismiss</div>
+              </button>
             </div>
           </div>
         </div>

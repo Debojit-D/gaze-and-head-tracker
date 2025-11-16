@@ -9,3 +9,12 @@ body:has(.keyboard-with-input-head-screen)::before,
 body:has(.keyboard-with-input-head-screen)::after {
   display: none !important;
 }
+
+/* Hide actual device cursor for head tracking */
+.keyboard-with-input-head-screen {
+  cursor: none !important;
+}
+
+.keyboard-with-input-head-screen * {
+  cursor: none !important;
+}

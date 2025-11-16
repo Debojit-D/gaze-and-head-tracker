@@ -1,14 +1,20 @@
 /* Keyboard with input screen */
 .keyboard-with-input-screen {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  padding: 0.8rem;
+  gap: 0.5rem;
+  padding: 0.5rem;
   overflow: hidden;
   box-sizing: border-box;
   position: relative;
+  cursor: none;
+}
+
+/* Switch Control Screen - also hide cursor */
+.keyboard-with-input-switch-screen {
+  cursor: none;
 }
 
 /* Tracky Mouse Integration Styles */
@@ -27,19 +33,19 @@
 
 /* Make sure Tracky Mouse UI is visible */
 .tracky-mouse-ui {
-  z-index: 9999 !important;
+  z-index: 999999999 !important;
 }
 
-/* Enhanced cursor visibility for head tracking */
-body {
-  cursor: auto;
+/* Hide device cursor globally when keyboard screens are active */
+body:has(.keyboard-with-input-screen),
+body:has(.keyboard-with-input-switch-screen) {
+  cursor: none !important;
 }
 
-.keyboard-key,
-.backspace-btn,
-.speaker-btn,
-.enable-tracky-btn {
-  cursor: pointer;
+/* Hide cursor on all child elements */
+.keyboard-with-input-screen *,
+.keyboard-with-input-switch-screen * {
+  cursor: none !important;
 }
 
 /* Custom pointer animation */
@@ -59,16 +65,17 @@ body {
   position: relative;
   width: 100%;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .keyboard-sentence-input {
-  width: 104.5%;
-  padding: 0.7rem 9rem 0.7rem 1rem;
+  width: 100%;
+  padding: 0.6rem 9rem 0.6rem 1rem;
   border: 3px solid #000;
   border-radius: 12px;
   font-family: "Courier New", monospace;
   font-weight: 700;
-  font-size: 2rem;
+  font-size: 1.8rem;
   background: #fff;
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
@@ -410,7 +417,7 @@ body {
 }
 
 .settings-popup {
-  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
   border: 4px solid #000;
   border-radius: 20px;
   padding: 1.8rem;
@@ -855,4 +862,60 @@ body {
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
   margin-top: 1rem;
   letter-spacing: 0.02em;
+}
+
+/* Ensure mouse cursor is always visible above all popups */
+body:has(.keyboard-with-input-screen)::before,
+body:has(.keyboard-with-input-switch-screen)::before,
+body:has(.voice-wrapper)::before {
+  z-index: 999999999 !important;
+}
+
+body:has(.keyboard-with-input-screen)::after,
+body:has(.keyboard-with-input-switch-screen)::after,
+body:has(.voice-wrapper)::after {
+  z-index: 999999998 !important;
+}
+
+/* Modality Switch Popup Button Styles */
+.modality-option-btn {
+  background-color: #fbf1ee;
+  border: 3px solid #000;
+  border-radius: 18px;
+  padding: 1.2rem 1.5rem;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: none;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  pointer-events: auto;
+}
+
+.modality-option-btn[data-modality-btn="dismiss"] {
+  background-color: #ffcdd2;
+}
+
+.modality-option-btn-title {
+  font-family: "Courier New", monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+}
+
+.modality-option-btn-icon {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modality-option-btn-icon img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }

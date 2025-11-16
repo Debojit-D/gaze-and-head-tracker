@@ -6,9 +6,13 @@ import ExitIcon from "../icons/exit.png";
 import PlayIcon from "../icons/play.png";
 import PauseIcon from "../icons/pause-button.png";
 import ClearIcon from "../icons/clean.png";
+import ChangeIcon from "../icons/change.png";
+import HeadIcon from "../icons/face-id.png";
+import ButtonIcon from "../icons/button.png";
 import popSound from "../sounds/ui-pop-sound-316482.mp3";
 import speechToTextService from "../services/speechToTextService";
 import AiIcon from "../icons/voice-person.png";
+import AiLLMIcon from "../icons/ai.png";
 
 export default function VoiceFlow({ onBack, audioEnabled }) {
   const [transcript, setTranscript] = useState("");
@@ -17,6 +21,7 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
   const [isModelLoading, setIsModelLoading] = useState(true);
   const [showModelLoading, setShowModelLoading] = useState(true);
   const [hoveredElement, setHoveredElement] = useState(null);
+  const [showModalityPopup, setShowModalityPopup] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const isInitializedRef = useRef(false);
@@ -290,19 +295,12 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
       const { x, y } = mouseRef.current;
       let found = null;
 
-      // Check all control buttons
-      const buttons = [
-        ".backspace-btn",
-        ".speaker-btn",
-        ".play-btn",
-        ".pause-btn",
-        ".clear-btn",
-        ".exit-btn",
-      ];
-
-      for (const selector of buttons) {
-        const btn = document.querySelector(selector);
-        if (btn) {
+      // Check modality buttons if popup is open
+      if (showModalityPopup) {
+        const modalityButtons = document.querySelectorAll(
+          "[data-modality-btn]"
+        );
+        for (const btn of modalityButtons) {
           const rect = btn.getBoundingClientRect();
           if (
             x >= rect.left &&
@@ -310,8 +308,36 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
             y >= rect.top &&
             y <= rect.bottom
           ) {
-            found = selector.replace(".", "");
+            const modalityType = btn.getAttribute("data-modality-btn");
+            found = `modality-${modalityType}`;
             break;
+          }
+        }
+      } else {
+        // Check all control buttons
+        const buttons = [
+          ".backspace-btn",
+          ".speaker-btn",
+          ".play-btn",
+          ".pause-btn",
+          ".clear-btn",
+          ".exit-btn",
+          ".switch-btn",
+        ];
+
+        for (const selector of buttons) {
+          const btn = document.querySelector(selector);
+          if (btn) {
+            const rect = btn.getBoundingClientRect();
+            if (
+              x >= rect.left &&
+              x <= rect.right &&
+              y >= rect.top &&
+              y <= rect.bottom
+            ) {
+              found = selector.replace(".", "");
+              break;
+            }
           }
         }
       }
@@ -324,7 +350,7 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [hoveredElement, showModelLoading]);
+  }, [hoveredElement, showModelLoading, showModalityPopup]);
 
   // Handle backspace
   const handleBackspace = () => {
@@ -423,6 +449,58 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
         handleClear();
       } else if (hoveredElement === "exit-btn") {
         handleExit();
+      } else if (hoveredElement === "switch-btn") {
+        setShowModalityPopup(true);
+      } else if (hoveredElement.startsWith("modality-")) {
+        const modality = hoveredElement.replace("modality-", "");
+        if (modality === "dismiss") {
+          setShowModalityPopup(false);
+        } else if (modality === "llm") {
+          if (speechSynthRef.current) {
+            speechSynthRef.current.cancel();
+            const utterance = new SpeechSynthesisUtterance(
+              "Switching to LLM-Powered keyboard"
+            );
+            speechSynthRef.current.speak(utterance);
+          }
+          setTimeout(() => {
+            stopContinuousRecording();
+            if (streamRef.current) {
+              streamRef.current.getTracks().forEach((track) => track.stop());
+            }
+            onBack && onBack("llm");
+          }, 500);
+        } else if (modality === "head") {
+          if (speechSynthRef.current) {
+            speechSynthRef.current.cancel();
+            const utterance = new SpeechSynthesisUtterance(
+              "Switching to Head Tracking"
+            );
+            speechSynthRef.current.speak(utterance);
+          }
+          setTimeout(() => {
+            stopContinuousRecording();
+            if (streamRef.current) {
+              streamRef.current.getTracks().forEach((track) => track.stop());
+            }
+            onBack && onBack("head");
+          }, 500);
+        } else if (modality === "switch") {
+          if (speechSynthRef.current) {
+            speechSynthRef.current.cancel();
+            const utterance = new SpeechSynthesisUtterance(
+              "Switching to Switch Control"
+            );
+            speechSynthRef.current.speak(utterance);
+          }
+          setTimeout(() => {
+            stopContinuousRecording();
+            if (streamRef.current) {
+              streamRef.current.getTracks().forEach((track) => track.stop());
+            }
+            onBack && onBack("switch");
+          }, 500);
+        }
       }
       setHoveredElement(null);
     }, DWELL_TIME);
@@ -445,6 +523,8 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
           streamRef.current.getTracks().forEach((track) => track.stop());
         }
         onBack && onBack();
+      } else if (e.key === "c" || e.key === "C") {
+        setShowModalityPopup(true);
       }
     };
 
@@ -541,14 +621,115 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
           )}
           <button className="clear-btn control-btn" aria-label="Clear text">
             <img src={ClearIcon} alt="Clear" />
-            <span>Clear</span>
+            <span>CLEAR</span>
+          </button>
+          <button
+            className="switch-btn control-btn"
+            aria-label="Switch modality"
+          >
+            <img src={ChangeIcon} alt="Switch" />
+            <span>SWITCH</span>
           </button>
           <button className="exit-btn control-btn" aria-label="Exit to home">
             <img src={ExitIcon} alt="Exit" />
-            <span>Exit</span>
+            <span>EXIT</span>
           </button>
         </div>
       </div>
+
+      {/* Modality Switch Popup */}
+      {showModalityPopup && (
+        <div
+          className="settings-popup-overlay"
+          style={{ cursor: "none" }}
+          onClick={(e) => {
+            if (e.target.className === "settings-popup-overlay") {
+              setShowModalityPopup(false);
+            }
+          }}
+        >
+          <div className="settings-popup" style={{ cursor: "none" }}>
+            <div className="settings-popup-header">
+              <h2>Switch Input Modality</h2>
+            </div>
+
+            <div
+              className="settings-content"
+              style={{
+                gap: "1.5rem",
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
+                cursor: "none",
+              }}
+            >
+              <button
+                className="modality-option-btn"
+                data-modality-btn="llm"
+                style={{
+                  transform:
+                    hoveredElement === "modality-llm"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">LLM-Powered</div>
+                <div className="modality-option-btn-icon">
+                  <img src={AiLLMIcon} alt="LLM" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="head"
+                style={{
+                  transform:
+                    hoveredElement === "modality-head"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Head Tracking</div>
+                <div className="modality-option-btn-icon">
+                  <img src={HeadIcon} alt="Head" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="switch"
+                style={{
+                  transform:
+                    hoveredElement === "modality-switch"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Switch Control</div>
+                <div className="modality-option-btn-icon">
+                  <img src={ButtonIcon} alt="Switch" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="dismiss"
+                style={{
+                  transform:
+                    hoveredElement === "modality-dismiss"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Dismiss</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
