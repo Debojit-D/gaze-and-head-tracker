@@ -1417,7 +1417,7 @@ export default function KeyboardWithInput({
       {showSetupCompletePopup && (
         <div className="time-popup-overlay">
           <div className="time-popup">
-            <div className="time-popup-day">✓ Head Tracking Setup Complete</div>
+            <div className="time-popup-day">Head Tracking Setup Complete</div>
             <div className="time-popup-date">Use head gaze to navigate</div>
           </div>
         </div>

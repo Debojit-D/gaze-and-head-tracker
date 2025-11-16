@@ -2,7 +2,7 @@
 
 ## Technical Documentation & System Architecture
 
-![Version](https://img.shields.io/badge/version-0.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![React](https://img.shields.io/badge/react-19.1.1-61dafb.svg)
 ![Vite](https://img.shields.io/badge/vite-7.1.14-646cff.svg)
 ![Transformers](https://img.shields.io/badge/transformers.js-2.17.2-yellow.svg)
@@ -1289,32 +1289,6 @@ Models are fetched from:
    - IndexedDB for model caching
    - LocalStorage for settings (future)
 
-### Troubleshooting
-
-**Issue: Models not downloading**
-
-```javascript
-// Check browser console for CORS errors
-// Clear browser cache and reload
-// Ensure internet connection for first load
-```
-
-**Issue: Camera not working (Head tracking)**
-
-```javascript
-// Ensure HTTPS or localhost (getUserMedia requirement)
-// Check browser permissions
-// Try different camera if multiple available
-```
-
-**Issue: Audio not playing**
-
-```javascript
-// Click anywhere on page first (autoplay policy)
-// Check browser audio not muted
-// Ensure audioEnabled state is true
-```
-
 ---
 
 ## Development Guidelines
@@ -1364,49 +1338,6 @@ function Component({ prop1, prop2 }) {
 }
 ```
 
-### Testing Checklist
-
-- [ ] Test all modalities (LLM, Voice, Head, Switch)
-- [ ] Test modality switching from each mode
-- [ ] Test dwell timers with different durations
-- [ ] Test switch navigation (all states)
-- [ ] Test voice recording and transcription
-- [ ] Test head tracking calibration
-- [ ] Test settings popup functionality
-- [ ] Test audio feedback (hover sounds, TTS)
-- [ ] Test keyboard layouts switching
-- [ ] Test error handling (model load failures, permission denials)
-
----
-
-## Future Enhancements
-
-### Planned Features
-
-1. **Eye Tracking Integration** - More precise gaze control
-2. **Custom Vocabulary** - User-defined word banks
-3. **Multi-Language Support** - Non-English keyboards
-4. **User Profiles** - Save settings per user
-5. **Cloud Sync** - Sync settings across devices
-6. **Analytics Dashboard** - Usage statistics
-7. **Gesture Recognition** - Hand/body gestures
-8. **Phrase Libraries** - Common expressions
-9. **Word Prediction History** - Learn user patterns
-10. **Export/Import** - Save/load sentences
-
-### Technical Improvements
-
-1. **Web Workers** - Offload ML inference to background
-2. **Service Worker** - Offline-first PWA
-3. **WebAssembly** - Faster model inference
-4. **IndexedDB Storage** - Persist user data
-5. **WebRTC Optimization** - Better camera streaming
-6. **Lazy Component Loading** - Code splitting
-7. **State Management Library** - Zustand or Jotai
-8. **Unit Tests** - Jest + React Testing Library
-9. **E2E Tests** - Playwright or Cypress
-10. **Performance Monitoring** - Lighthouse CI
-
 ---
 
 ## Contributing
@@ -1418,15 +1349,6 @@ function Component({ prop1, prop2 }) {
 3. Commit changes (`git commit -m 'Add AmazingFeature'`)
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
-
-### Code Review Criteria
-
-- [ ] Follows existing code style
-- [ ] Includes comments for complex logic
-- [ ] No console errors in production build
-- [ ] Tested across multiple browsers
-- [ ] Performance tested (no memory leaks)
-- [ ] Accessibility tested (keyboard navigation, screen readers)
 
 ---
 
@@ -1454,11 +1376,10 @@ function Component({ prop1, prop2 }) {
 For issues, questions, or contributions:
 
 - **GitHub Issues**: [Report Bug](https://github.com/guntas-13/input-with-gaze-and-head-tracking/issues)
-- **Email**: guntas13@example.com (replace with actual)
-- **Documentation**: This file
+- **Email**: guntas.saran13@gmail.com
 
 ---
 
 **Last Updated:** November 16, 2025
-**Version:** 0.0.0
+**Version:** 1.0.0
 **Maintainer:** guntas-13
