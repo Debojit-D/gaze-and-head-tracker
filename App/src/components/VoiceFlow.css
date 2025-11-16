@@ -1,6 +1,8 @@
+@import "./KeyboardWithInput.css";
+
 /* Voice wrapper */
 .voice-wrapper {
-  height: 100vh;
+  height: 100%;
   width: 100%;
   background: #fff;
   display: flex;
@@ -8,12 +10,18 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  cursor: none;
+}
+
+/* Hide device cursor on all voice flow elements */
+.voice-wrapper * {
+  cursor: none !important;
 }
 
 /* Voice screen - updated layout */
 .voice-screen {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -27,7 +35,6 @@
 .input-display {
   position: relative;
   width: 100%;
-  max-width: 1200px;
   flex-shrink: 0;
 }
 
@@ -42,6 +49,10 @@
   background: #fff;
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
+  overflow-x: auto;
+  white-space: nowrap;
+  direction: ltr;
+  text-align: left;
 }
 
 .voice-sentence-input:focus {
@@ -58,7 +69,6 @@
   height: 56px;
   border: none;
   background: transparent;
-  cursor: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,7 +201,6 @@
   border: 3px solid #000;
   border-radius: 16px;
   background: #fff;
-  cursor: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
   min-width: 120px;

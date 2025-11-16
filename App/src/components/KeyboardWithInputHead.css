@@ -9,3 +9,33 @@ body:has(.keyboard-with-input-head-screen)::before,
 body:has(.keyboard-with-input-head-screen)::after {
   display: none !important;
 }
+
+/* Hide actual device cursor for head tracking */
+.keyboard-with-input-head-screen {
+  cursor: none !important;
+}
+
+.keyboard-with-input-head-screen * {
+  cursor: none !important;
+}
+
+/* Show device cursor in settings popup for slider control */
+.keyboard-with-input-head-screen .settings-popup-overlay {
+  cursor: default !important;
+}
+
+.keyboard-with-input-head-screen .settings-popup {
+  cursor: default !important;
+}
+
+.keyboard-with-input-head-screen .settings-popup * {
+  cursor: default !important;
+}
+
+.keyboard-with-input-head-screen .settings-popup input[type="range"] {
+  cursor: pointer !important;
+}
+
+.keyboard-with-input-head-screen .settings-popup button {
+  cursor: pointer !important;
+}

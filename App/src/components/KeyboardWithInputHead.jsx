@@ -9,7 +9,7 @@ import popSound from "../sounds/ui-pop-sound-316482.mp3";
 // Import all keyboard icons
 import SettingsIcon from "../icons/settings.png";
 import ClearIcon from "../icons/clean.png";
-import MySelfIcon from "../icons/myself_10012465.png";
+import MySelfIcon from "../icons/my.png";
 import ExitIcon from "../icons/exit.png";
 import ClockIcon from "../icons/clock.png";
 import HomeIcon from "../icons/home.png";
@@ -40,6 +40,12 @@ import BuyIcon from "../icons/cash.png";
 import LoveIcon from "../icons/love.png";
 import ToCallIcon from "../icons/phone-call.png";
 import ListenIcon from "../icons/listen.png";
+import ChangeIcon from "../icons/change.png";
+import EyeIcon from "../icons/eye-care.png";
+import MicIcon from "../icons/voice-recognition.png";
+import HeadIcon from "../icons/face-id.png";
+import ButtonIcon from "../icons/button.png";
+import AiIcon from "../icons/ai.png";
 
 const BACKSPACE_DWELL_TIME = 2000; // 2 seconds for backspace
 
@@ -101,11 +107,11 @@ const KEYBOARD_LAYOUTS = {
       color: "#e1bee7",
     },
     {
-      id: "sad",
-      label: "sad",
-      icon: SadIcon,
-      type: "adjective",
-      color: "#e1bee7",
+      id: "switchmodality",
+      label: "SWITCH",
+      icon: ChangeIcon,
+      type: "action",
+      color: "#b3e5fc",
     },
     { id: "you", label: "you", type: "pronoun", color: "#fff4d6" },
     { id: "do", label: "do", type: "verb", color: "#f5f5f5" },
@@ -199,11 +205,11 @@ const KEYBOARD_LAYOUTS = {
       color: "#ffcdd2",
     },
     {
-      id: "need",
-      label: "need",
-      icon: NeedIcon,
-      type: "verb",
-      color: "#c8e6c9",
+      id: "switchmodality",
+      label: "SWITCH",
+      icon: ChangeIcon,
+      type: "action",
+      color: "#b3e5fc",
     },
     { id: "will", label: "will", type: "verb", color: "#f5f5f5" },
     { id: "do", label: "do", type: "verb", color: "#f5f5f5" },
@@ -660,6 +666,7 @@ export default function KeyboardWithInput({
   const [showTimePopup, setShowTimePopup] = useState(false);
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
   const [showSetupCompletePopup, setShowSetupCompletePopup] = useState(false);
+  const [showModalityPopup, setShowModalityPopup] = useState(false);
   const [currentTime, setCurrentTime] = useState({
     time: "",
     day: "",
@@ -679,6 +686,14 @@ export default function KeyboardWithInput({
   const speechSynthRef = useRef(null);
   const trackyMouseRef = useRef(null);
   const dwellClickerRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Auto-scroll input to show the rightmost content when sentence changes
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+    }
+  }, [sentence]);
 
   // Initialize speech synthesis
   useEffect(() => {
@@ -910,6 +925,21 @@ export default function KeyboardWithInput({
     };
   }, []);
 
+  // Handle 'C' key press to open modality popup
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === "c" || e.key === "C") {
+        setShowModalityPopup(true);
+      }
+      if (e.key === "v" || e.key === "V") {
+        setShowModalityPopup(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, []);
+
   // Track mouse position
   useEffect(() => {
     const onMove = (e) => {
@@ -966,7 +996,7 @@ export default function KeyboardWithInput({
   // Hover detection loop
   useEffect(() => {
     const checkHover = () => {
-      // Skip hover detection if any popup is showing
+      // Skip hover detection if certain popups are showing (but not modality popup)
       if (showTimePopup || showSettingsPopup) {
         rafRef.current = requestAnimationFrame(checkHover);
         return;
@@ -974,6 +1004,26 @@ export default function KeyboardWithInput({
 
       const { x, y } = mouseRef.current;
       let found = null;
+
+      // Check modality buttons if popup is showing
+      if (showModalityPopup) {
+        const modalityBtns = document.querySelectorAll("[data-modality-btn]");
+        modalityBtns.forEach((btn) => {
+          const rect = btn.getBoundingClientRect();
+          if (
+            x >= rect.left &&
+            x <= rect.right &&
+            y >= rect.top &&
+            y <= rect.bottom
+          ) {
+            found = "modality-" + btn.getAttribute("data-modality-btn");
+          }
+        });
+
+        if (found !== hoveredElement) setHoveredElement(found);
+        rafRef.current = requestAnimationFrame(checkHover);
+        return;
+      }
 
       const keys = document.querySelectorAll(".keyboard-key");
       keys.forEach((keyEl) => {
@@ -1026,7 +1076,7 @@ export default function KeyboardWithInput({
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [hoveredElement, showTimePopup, showSettingsPopup]);
+  }, [hoveredElement, showTimePopup, showSettingsPopup, showModalityPopup]);
 
   // Update settings popup camera feed
   useEffect(() => {
@@ -1131,9 +1181,13 @@ export default function KeyboardWithInput({
   const handleSettingsPopup = () => {
     if (showSettingsPopup) {
       setShowSettingsPopup(false);
+      // Clear any hovered element to prevent instant triggering
+      setHoveredElement(null);
       console.log("Settings popup closed");
     } else {
       setShowSettingsPopup(true);
+      // Clear any hovered element when opening settings
+      setHoveredElement(null);
       console.log("Settings popup opened");
 
       // Sync current slider values from TrackyMouse
@@ -1146,6 +1200,7 @@ export default function KeyboardWithInput({
 
         if (xSlider && ySlider && accelSlider) {
           setTrackySettings({
+            ...trackySettings,
             horizontalSensitivity: parseFloat(xSlider.value),
             verticalSensitivity: parseFloat(ySlider.value),
             acceleration: parseFloat(accelSlider.value),
@@ -1162,7 +1217,9 @@ export default function KeyboardWithInput({
 
   // Handle sensitivity changes
   const handleSensitivityChange = (type, value) => {
-    const newSettings = { ...trackySettings, [type]: parseFloat(value) };
+    const parsedValue =
+      type === "dwellTime" ? parseInt(value, 10) : parseFloat(value);
+    const newSettings = { ...trackySettings, [type]: parsedValue };
     setTrackySettings(newSettings);
 
     // Update TrackyMouse UI sliders directly and trigger their onchange handlers
@@ -1267,6 +1324,9 @@ export default function KeyboardWithInput({
       if (onClose) onClose();
     } else if (key.id === "settings") {
       handleSettingsPopup();
+    } else if (key.id === "switchmodality") {
+      setShowModalityPopup(true);
+      speakText("Switch Modality");
     } else if (key.type === "category" && KEYBOARD_LAYOUTS[key.id]) {
       speakText(key.label);
       setCurrentLayout(key.id);
@@ -1291,6 +1351,11 @@ export default function KeyboardWithInput({
       dwellTimerRef.current = null;
     }
 
+    // Don't start dwell timer if settings popup or other popups are open
+    if (showTimePopup || showSettingsPopup || showSetupCompletePopup) {
+      return;
+    }
+
     if (!hoveredElement) return;
 
     console.log("Starting dwell timer for:", hoveredElement);
@@ -1309,6 +1374,22 @@ export default function KeyboardWithInput({
       } else if (hoveredElement === "speaker-btn") {
         handleSpeaker();
         setHoveredElement(null);
+      } else if (hoveredElement && hoveredElement.startsWith("modality-")) {
+        const modality = hoveredElement.replace("modality-", "");
+        if (modality === "dismiss") {
+          speakText("Dismissed");
+          setShowModalityPopup(false);
+        } else if (modality === "llm") {
+          speakText("Switching to LLM-Powered");
+          setTimeout(() => onClose("llm"), 500);
+        } else if (modality === "voice") {
+          speakText("Switching to Voice Recognition");
+          setTimeout(() => onClose("voice"), 500);
+        } else if (modality === "switch") {
+          speakText("Switching to Switch Control");
+          setTimeout(() => onClose("switch"), 500);
+        }
+        setHoveredElement(null);
       } else {
         executeKeyAction(hoveredElement);
       }
@@ -1320,7 +1401,15 @@ export default function KeyboardWithInput({
         dwellTimerRef.current = null;
       }
     };
-  }, [hoveredElement, sentence, currentKeys]);
+  }, [
+    hoveredElement,
+    sentence,
+    currentKeys,
+    trackySettings.dwellTime,
+    showTimePopup,
+    showSettingsPopup,
+    showSetupCompletePopup,
+  ]);
 
   return (
     <div className="keyboard-with-input-screen keyboard-with-input-head-screen">
@@ -1465,7 +1554,10 @@ export default function KeyboardWithInput({
                 <label className="setting-label">
                   <span className="setting-name">Dwell Time</span>
                   <span className="setting-value">
-                    {(trackySettings.dwellTime / 1000).toFixed(1)}s
+                    {trackySettings.dwellTime
+                      ? (trackySettings.dwellTime / 1000).toFixed(1)
+                      : "3.0"}
+                    s
                   </span>
                 </label>
                 <div className="slider-container">
@@ -1475,7 +1567,7 @@ export default function KeyboardWithInput({
                     min="2000"
                     max="8000"
                     step="500"
-                    value={trackySettings.dwellTime}
+                    value={trackySettings.dwellTime || 3000}
                     onChange={(e) =>
                       handleSensitivityChange("dwellTime", e.target.value)
                     }
@@ -1503,8 +1595,105 @@ export default function KeyboardWithInput({
         </div>
       )}
 
+      {/* Modality Switch Popup */}
+      {showModalityPopup && (
+        <div
+          className="settings-popup-overlay"
+          style={{ cursor: "none" }}
+          onClick={(e) => {
+            if (e.target.className === "settings-popup-overlay") {
+              setShowModalityPopup(false);
+            }
+          }}
+        >
+          <div className="settings-popup" style={{ cursor: "none" }}>
+            <div className="settings-popup-header">
+              <h2>Switch Input Modality</h2>
+            </div>
+
+            <div
+              className="settings-content"
+              style={{
+                gap: "1.5rem",
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
+                cursor: "none",
+              }}
+            >
+              <button
+                className="modality-option-btn"
+                data-modality-btn="llm"
+                style={{
+                  transform:
+                    hoveredElement === "modality-llm"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">LLM-Powered</div>
+                <div className="modality-option-btn-icon">
+                  <img src={AiIcon} alt="LLM" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="voice"
+                style={{
+                  transform:
+                    hoveredElement === "modality-voice"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">
+                  Voice Recognition
+                </div>
+                <div className="modality-option-btn-icon">
+                  <img src={MicIcon} alt="Voice" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="switch"
+                style={{
+                  transform:
+                    hoveredElement === "modality-switch"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Switch Control</div>
+                <div className="modality-option-btn-icon">
+                  <img src={ButtonIcon} alt="Switch" />
+                </div>
+              </button>
+
+              <button
+                className="modality-option-btn"
+                data-modality-btn="dismiss"
+                style={{
+                  transform:
+                    hoveredElement === "modality-dismiss"
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                }}
+              >
+                <div className="modality-option-btn-title">Dismiss</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="input-display">
         <input
+          ref={inputRef}
           type="text"
           className="keyboard-sentence-input"
           placeholder="Your sentence will appear here..."

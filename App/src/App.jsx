@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Home from "../src/components/Home";
-import EyeGazeFlow from "../src/components/EyeGazeFlow";
+import LLM from "../src/components/LLM";
 import VoiceFlow from "../src/components/VoiceFlow";
 import HeadTrackingFlow from "../src/components/HeadTrackingFlow";
 import SwitchControl from "../src/components/SwitchControl";
@@ -41,25 +41,30 @@ function App() {
     setRoute(id);
   };
 
+  const handleBackOrSwitch = (modality) => {
+    if (modality && modality !== "home") {
+      // Switch to different modality
+      setRoute(modality);
+    } else {
+      // Go back to home
+      setRoute("home");
+    }
+  };
+
   if (route === "llm") {
-    return (
-      <EyeGazeFlow
-        onBack={() => setRoute("home")}
-        audioEnabled={audioEnabled}
-      />
-    );
+    return <LLM onBack={handleBackOrSwitch} audioEnabled={audioEnabled} />;
   }
 
   if (route === "voice") {
     return (
-      <VoiceFlow onBack={() => setRoute("home")} audioEnabled={audioEnabled} />
+      <VoiceFlow onBack={handleBackOrSwitch} audioEnabled={audioEnabled} />
     );
   }
 
   if (route === "head") {
     return (
       <HeadTrackingFlow
-        onBack={() => setRoute("home")}
+        onBack={handleBackOrSwitch}
         audioEnabled={audioEnabled}
       />
     );
@@ -67,10 +72,7 @@ function App() {
 
   if (route === "switch") {
     return (
-      <SwitchControl
-        onBack={() => setRoute("home")}
-        audioEnabled={audioEnabled}
-      />
+      <SwitchControl onBack={handleBackOrSwitch} audioEnabled={audioEnabled} />
     );
   }
 

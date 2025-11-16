@@ -15,9 +15,21 @@ export default function SwitchControl({ onBack, audioEnabled }) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [onBack]);
 
+  const handleModalityChange = (modality) => {
+    if (modality === "home" || !modality) {
+      onBack();
+    } else {
+      // Navigate to different modality
+      onBack(modality);
+    }
+  };
+
   return (
     <div className="switch-wrapper">
-      <KeyboardWithInputSwitch onClose={onBack} audioEnabled={audioEnabled} />
+      <KeyboardWithInputSwitch
+        onClose={handleModalityChange}
+        audioEnabled={audioEnabled}
+      />
     </div>
   );
 }
