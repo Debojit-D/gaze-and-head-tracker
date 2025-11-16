@@ -8,8 +8,7 @@ import PauseIcon from "../icons/pause-button.png";
 import ClearIcon from "../icons/clean.png";
 import popSound from "../sounds/ui-pop-sound-316482.mp3";
 import speechToTextService from "../services/speechToTextService";
-import voiceIcon from "../icons/voice-person.png";
-import AIIcon from "../icons/AI.png";
+import AiIcon from "../icons/voice-person.png";
 
 export default function VoiceFlow({ onBack, audioEnabled }) {
   const [transcript, setTranscript] = useState("");
@@ -453,7 +452,7 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
           <div className="llm-loading-popup">
             <div className="llm-loading-icon">
               <img
-                src={voiceIcon}
+                src={AiIcon}
                 alt="Voice"
                 style={{ width: "80px", height: "80px" }}
               />
