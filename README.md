@@ -2,6 +2,8 @@
 
 An accessible input web application featuring multiple modalities - Head-Gaze, Voice Recognition, Switch Control along with LLM-powered keyboard prediction for text entry and interaction. Utilizes Text Generation, Speech-to-Text, and Text-to-Speech services for web applications from [huggingface/transformers.js](https://github.com/huggingface/transformers.js). And utilizes [Tracky-Mouse API](https://github.com/1j01/tracky-mouse) for head tracking based cursor control.
 
+Find the detailed README [here](./App/README.md).
+
 ![](./assets/1-open.png)
 ![](./assets/3-llm.png)
 
