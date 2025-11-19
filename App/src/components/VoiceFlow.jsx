@@ -526,6 +526,9 @@ export default function VoiceFlow({ onBack, audioEnabled }) {
       } else if (e.key === "c" || e.key === "C") {
         setShowModalityPopup(true);
       }
+      else if (e.key === "v" || e.key === "V") {
+        setShowModalityPopup(false);
+      }
     };
 
     window.addEventListener("keydown", handleKeyPress);

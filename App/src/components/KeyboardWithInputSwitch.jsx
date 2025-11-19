@@ -680,7 +680,7 @@ export default function KeyboardWithInputSwitch({
   const [highlightMode, setHighlightMode] = useState("controls"); // 'controls', 'rows', 'keys', 'modality'
   const [selectedRow, setSelectedRow] = useState(null); // Track selected row for key navigation
   const switchTimerRef = useRef(null);
-  const [switchDelay, setSwitchDelay] = useState(1500); // 1.5 seconds default, configurable
+  const [switchDelay, setSwitchDelay] = useState(1000); // 1 seconds default, configurable
 
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const rafRef = useRef(0);
@@ -1423,6 +1423,7 @@ export default function KeyboardWithInputSwitch({
           <div className="instructions-popup">
             <div className="instructions-popup-header">
               <h2>Switch-based Navigation</h2>
+              <h4>Blue Dwell cursor is active too</h4>
             </div>
             <div className="instructions-popup-content">
               <div className="instruction-item">

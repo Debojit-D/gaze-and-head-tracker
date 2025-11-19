@@ -138,7 +138,7 @@ export default function Home({ onSelectModality, audioEnabled }) {
   return (
     <div className="content-wrapper" ref={containerRef}>
       <div className="main-content">
-        <h1 className="title">SELECT YOUR INPUT MODALITY</h1>
+        <h1 className="title">DWELL ON ANY MODALITY TO BEGIN</h1>
 
         <div className="cards-container">
           {CARDS.map((card) => (
@@ -157,6 +157,19 @@ export default function Home({ onSelectModality, audioEnabled }) {
               </div>
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Help UI at bottom */}
+      <div className="help-ui">
+        <div className="help-content">
+          <div className="help-header">WHEN WITHIN ANY MODALITY</div>
+          <div className="help-section">
+            <span className="help-key">C</span>
+            <span className="help-text">Show Menu</span>
+            <span className="help-key">V</span>
+            <span className="help-text">Hide Menu</span>
+          </div>
         </div>
       </div>
     </div>

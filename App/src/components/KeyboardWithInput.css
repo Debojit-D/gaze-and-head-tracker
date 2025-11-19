@@ -296,6 +296,16 @@ body:has(.keyboard-with-input-switch-screen) {
   letter-spacing: 0.05em;
 }
 
+.instructions-popup-header h4 {
+  font-family: "Courier New", monospace;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3), 0 3px 15px rgba(0, 0, 0, 0.4);
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.05em;
+}
+
 .instructions-popup-content {
   display: flex;
   flex-direction: column;
